@@ -99,7 +99,13 @@
 </html>
 <script src="../../assets/js/core/jquery.min.js" type="text/javascript"></script>
 <script type="text/javascript">
-  $(document).ready(()=>{
-        $('.navbar').removeClass('navbar-transparent')
+  $(document).scroll(()=>{
+        var $nav = $('.fixed-top');
+        var scroll = $(window).scrollTop();
+        if (scroll >= 100){
+            $nav.removeClass('navbar-transparent')
+        }else{
+            $nav.addClass('navbar-transparent')
+        }
     });
 </script>
