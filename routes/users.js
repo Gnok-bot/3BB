@@ -1,4 +1,3 @@
-const { response } = require('express');
 const e = require('express');
 const express = require('express');
 const multer = require('multer');
@@ -9,12 +8,14 @@ const router = express.Router();
 const Blogs = require('../models/blogs');
 const app = require('../app');
 const { execute } = require('../models/blogs');
-const fs = require('fs');
+const fs = require('fs-extra');
+const path = require('path')
+
 
 //image storages
 const storage = multer.diskStorage({
   destination: function (req, file, cb) {
-    if (file.fieldname === "img_header") {
+    if (file.fieldname === "img_logo") {
       cb(null, './public/images/' + req.session.id + '/headers')
     } else if (file.fieldname === "img") {
       cb(null, './public/images/' + req.session.id + '/banners')
@@ -45,7 +46,7 @@ const storage = multer.diskStorage({
 
   },
   filename: function (req, file, cb) {
-    if (file.fieldname === "img_header") {
+    if (file.fieldname === "img_logo") {
       cb(null, Date.now() + ".jpg")
     } else if (file.fieldname === "img") {
       cb(null, Date.now() + ".jpg")
@@ -134,6 +135,14 @@ router.post('/adduser', ifNotLoggedIn, [
         Blogs.execute("INSERT INTO users (username,password) VALUES (?,?)", [username, hash_pass])
           .then(result => {
             res.send(`สร้างบัญชีเรียบร้อยแล้ว <a href="/admin/blogs">Home</a>`)
+            Blogs.execute("SELECT id FROM users WHERE username = ?",[username])
+            .then((result)=>{
+              fs.ensureDir('./public/images/' + result[0][0].id + '/banners', err => {console.log(err)})
+              fs.ensureDir('./public/images/' + result[0][0].id + '/headers', err => {console.log(err)})
+              fs.ensureDir('./public/images/' + result[0][0].id + '/packages', err => {console.log(err)})
+              fs.ensureDir('./public/images/' + result[0][0].id + '/promos', err => {console.log(err)})
+              fs.ensureDir('./public/images/' + result[0][0].id + '/qrcode', err => {console.log(err)})
+            })
           }).catch(err => {
             if (err) throw err;
           })
@@ -211,11 +220,16 @@ router.get('/blogs', ifNotLoggedIn, function (req, res, next) {
   Blogs.execute("SELECT * FROM blogs b, usersinfo u WHERE b.id = u.id AND b.id = ?", [id])
     .then((result) => {
       blogResult = result[0]
+      if(blogResult == ''){
+        bg = 'bg5.jpg'
+      } else{
+        bg = result[0][0].img_header
+      }
       Blogs.execute("SELECT * FROM promotion p WHERE p.id = ?", [id]).then((result) => {
         promoResult = result[0]
         Blogs.execute("SELECT * FROM packages p WHERE p.id = ?", [id]).then((result) => {
           packResult = result[0]
-          res.render("blogs/index", { data: "3BB ระบบหลังบ้าน", blogs: blogResult, promo: promoResult, packages: packResult, isLoggedIn: "admin" });
+          res.render("blogs/index", { data: "3BB ระบบหลังบ้าน", bg: bg, blogs: blogResult, promo: promoResult, packages: packResult, isLoggedIn: "admin" });
         })
       })
       // 
@@ -277,7 +291,7 @@ router.post('/profile/update', upload.single('line_qrcode'), (req, res, next) =>
   if (req.file != null) {
     line_qrcode = req.file.filename
     const path = './public/images/' + req.session.id + '/qrcode/' + req.body.line_qrcodePrev
-    fs.unlink(path, (err) => {
+    fs.remove(path, (err) => {
       if (err) throw err;
     })
   } else {
@@ -300,7 +314,12 @@ router.get('/delete/:id', ifNotLoggedIn, function (req, res, next) {
     FROM blogs INNER JOIN promotion ON blogs.id = promotion.id \
     INNER JOIN packages ON blogs.id = packages.id \
     WHERE blogs.id=?", [id])
-    .then(res.redirect('/admin/blogs'))
+    .then(
+      fs.emptyDir('./public/images/' + req.session.id + '/banners', err => {if (err) return console.error(err)}),
+      fs.emptyDir('./public/images/' + req.session.id + '/headers', err => {if (err) return console.error(err)}),
+      fs.emptyDir('./public/images/' + req.session.id + '/packages', err => {if (err) return console.error(err)}),
+      fs.emptyDir('./public/images/' + req.session.id + '/promos', err => {if (err) return console.error(err)}),
+      res.redirect('/admin/blogs'))
     .catch((err) => {
       if (err) throw err;
     })
@@ -322,13 +341,13 @@ router.get('/edit/:id', ifNotLoggedIn, function (req, res, next) {
 });
 
 //ADD Data
-const imgUpload = upload.fields([{ name: 'img_header', maxCount: 1 }, { name: 'promotionImg', maxCount: 1 },
+const imgUpload = upload.fields([{ name: 'img_logo', maxCount: 1 }, { name: 'promotionImg', maxCount: 1 },
 { name: 'packageImg', maxCount: 8 }, { name: 'img', maxCount: 8 }])
 router.post('/add', imgUpload, function (req, res, next) {
   id = req.session.id
   title = req.body.title,
     subtitle = req.body.subtitle,
-    img_header = req.files['img_header'][0].filename
+    img_logo = req.files['img_logo'][0].filename
   //Banner Img
   req.files['img'] != null ? (
     img_banner1 = req.files['img'][0].filename,
@@ -340,11 +359,18 @@ router.post('/add', imgUpload, function (req, res, next) {
   promoDesc = req.body.promoDesc,
     promoImg = req.files['promotionImg'][0].filename
 
-  //Package props
+  if(req.body.option == 'option1'){
+    img_header = 'bg3.jpg'
+  }else if(req.body.option == 'option2'){
+    img_header = 'bg4.jpg'
+  }else if(req.body.option == 'option3'){
+    img_header = 'bg6.jpg'
+  }
+  // Package props
   const index = req.body.packageName.length;
   for (i = 0; i < index; i++) {
     packageName = req.body.packageName[i]
-    packagePrice = req.body.packagePrice[i]
+    packagePrice = req.body.packagePrice[i] 
     packageDesc = req.body.packageDesc[i]
     packageImg = req.files['packageImg'][i].filename
 
@@ -355,8 +381,8 @@ router.post('/add', imgUpload, function (req, res, next) {
       })
   }
   // INSERT DATA INTO TABLE BLOGS
-  Blogs.execute("INSERT INTO blogs (id, title, subtitle, img_header, img_banner1, img_banner2, img_banner3) values \
-    (?,?,?,?,?,?,?)", [id, title, subtitle, img_header, img_banner1, img_banner2, img_banner3])
+  Blogs.execute("INSERT INTO blogs (id, title, subtitle, img_header, img_logo, img_banner1, img_banner2, img_banner3) values \
+    (?,?,?,?,?,?,?,?)", [id, title, subtitle, img_header, img_logo, img_banner1, img_banner2, img_banner3])
     .then().catch((err) => {
       if (err) throw err;
     })
@@ -371,7 +397,7 @@ router.post('/add', imgUpload, function (req, res, next) {
 });
 
 //UPDATE DATA
-const imgUpdate = upload.fields([{ name: 'img_header', maxCount: 1 }, { name: 'promotionImg', maxCount: 1 },
+const imgUpdate = upload.fields([{ name: 'img_logo', maxCount: 1 }, { name: 'promotionImg', maxCount: 1 },
 { name: 'packageImg1', maxCount: 1 }, { name: 'packageImg2', maxCount: 1 }, { name: 'packageImg3', maxCount: 1 },
 { name: 'packageImg4', maxCount: 1 }, { name: 'packageImg5', maxCount: 1 }, { name: 'packageImg6', maxCount: 1 },
 { name: 'packageImg7', maxCount: 1 }, { name: 'packageImg8', maxCount: 1 }, { name: 'img', maxCount: 8 }])
@@ -380,15 +406,28 @@ router.post('/update', imgUpdate, function (req, res, next) {
   id = req.session.id
   title = req.body.title,
     subtitle = req.body.subtitle
-  if (req.files['img_header'] != null) {
-    img_header = req.files['img_header'][0].filename
-    const path = './public/images/' + req.session.id + '/headers/' + req.body.img_headerPrev
-    fs.unlink(path, (err) => {
+  if (req.files['img_logo'] != null) {
+    img_logo = req.files['img_logo'][0].filename
+    const path = './public/images/' + req.session.id + '/headers/' + req.body.img_logoPrev
+    fs.remove(path, (err) => {
       if (err) throw err;
     })
   } else {
+    img_logo = req.body.img_logoPrev
+  }
+  //Header Img
+  if(req.body.option){
+    if(req.body.option == 'option1'){
+      img_header = 'bg3.jpg'
+    }else if(req.body.option == 'option2'){
+      img_header = 'bg4.jpg'
+    }else if(req.body.option == 'option3'){
+      img_header = 'bg6.jpg'
+    }
+  }else{
     img_header = req.body.img_headerPrev
   }
+
   //Banner Img 
   if (req.files['img'] != null) {
     (
@@ -399,7 +438,7 @@ router.post('/update', imgUpdate, function (req, res, next) {
     if (req.body.img_banner[0] != '') {
       for (i = 0; i <= 2; i++) {
         const path = './public/images/' + req.session.id + '/banners/' + req.body.img_banner[i]
-        fs.unlink(path, (err) => {
+        fs.remove(path, (err) => {
           if (err) throw err;
         })
       }
@@ -408,8 +447,8 @@ router.post('/update', imgUpdate, function (req, res, next) {
     (img_banner1 = '', img_banner2 = '', img_banner3 = '')
   }
 
-  Blogs.execute("UPDATE blogs SET title = ?, subtitle = ?, img_header = ?, img_banner1 = ?, img_banner2 = ?, img_banner3 = ? \
-    WHERE id = ?", [title, subtitle, img_header, img_banner1, img_banner2, img_banner3, id])
+  Blogs.execute("UPDATE blogs SET title = ?, subtitle = ?,img_header = ?, img_logo = ?, img_banner1 = ?, img_banner2 = ?, img_banner3 = ? \
+    WHERE id = ?", [title, subtitle, img_header, img_logo, img_banner1, img_banner2, img_banner3, id])
     .then().catch((err) => {
       if (err) throw err;
     })
@@ -419,7 +458,7 @@ router.post('/update', imgUpdate, function (req, res, next) {
   if (req.files['promotionImg'] != null) {
     promoImg = req.files['promotionImg'][0].filename
     const path = './public/images/' + req.session.id + '/promos/' + req.body.promoImgPrev;
-    fs.unlink(path, (err) => {
+    fs.remove(path, (err) => {
       if (err) throw err;
     })
   } else {
@@ -445,7 +484,7 @@ router.post('/update', imgUpdate, function (req, res, next) {
         packageImg = req.files['packageImg' + i][0].filename
         if (req.body.package[i - 1].packageImgPrev != null) {
           const path = './public/images/' + req.session.id + '/packages/' + req.body.package[i - 1].packageImgPrev
-          fs.unlink(path, (err) => {
+          fs.remove(path, (err) => {
             if (err) throw err;
           })
         }
@@ -476,10 +515,10 @@ router.get('/delete-pk/:packageNo', ifNotLoggedIn, function (req, res, next) {
       var imgName = img[0][0].packageImg
       // console.log(imgName);
       const path = './public/images/' + req.session.id + '/packages/' + imgName
-      fs.unlink(path, (err) => {
+      fs.remove(path, (err) => {
         if (err) throw err;
       })
-    })
+    }) 
   Blogs.execute('DELETE FROM packages WHERE packageNo = ? AND id= ?', [packageNo, id])
     .then(res.redirect("/admin/edit/" + id))
 });

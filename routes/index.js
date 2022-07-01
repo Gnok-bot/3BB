@@ -1,6 +1,5 @@
 var express = require('express');
 var router = express.Router();
-const cookieSession = require('cookie-session')
 const Blogs = require('../models/blogs');
 
 /* GET home page. */
@@ -13,11 +12,12 @@ router.get('/15',function(req, res, next) {
   Blogs.execute("SELECT * FROM blogs b, usersinfo u WHERE b.id = u.id AND b.id = ?", [id])
     .then((result) => {
       blogResult = result[0]
+      blogResult == ''? bg = 'bg5.jpg' : bg = result[0][0].img_header
       Blogs.execute("SELECT * FROM promotion p WHERE p.id = ?", [id]).then((result) => {
         promoResult = result[0]
         Blogs.execute("SELECT * FROM packages p WHERE p.id = ?", [id]).then((result) => {
           packResult = result[0]
-          res.render("blogs/index", { data: "3BB ADS PAGE", blogs: blogResult, promo: promoResult, packages: packResult });
+          res.render("blogs/index", { data: "3BB ADS PAGE",bg: bg, blogs: blogResult, promo: promoResult, packages: packResult });
         })
       })
       // 
@@ -31,11 +31,12 @@ router.get('/14', function(req, res, next) {
   Blogs.execute("SELECT * FROM blogs b, usersinfo u WHERE b.id = u.id AND b.id = ?", [id])
   .then((result) => {
     blogResult = result[0]
+    blogResult == ''? bg = 'bg5.jpg' : bg = result[0][0].img_header
     Blogs.execute("SELECT * FROM promotion p WHERE p.id = ?", [id]).then((result) => {
       promoResult = result[0]
       Blogs.execute("SELECT * FROM packages p WHERE p.id = ?", [id]).then((result) => {
         packResult = result[0]
-        res.render("blogs/index", { data: "3BB ADS PAGE", blogs: blogResult, promo: promoResult, packages: packResult });
+        res.render("blogs/index", { data: "3BB ADS PAGE",bg: bg, blogs: blogResult, promo: promoResult, packages: packResult });
       })
     })
     // 

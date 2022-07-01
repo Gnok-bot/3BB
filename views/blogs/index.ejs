@@ -10,8 +10,8 @@
       <% } %>
     <div class="wrapper">
       <div class="page-header page-header-small">
-        <div class="page-header-image" data-parallax="true" style="background-image: url('../../assets/img/bg6.jpg');">
-        </div>
+        <div class="page-header-image" data-parallax="true" style="background-image: url('/assets/img/<%= bg %>');">
+      </div>
         <div class="content-center">
           <div class="container">         
             <h1 class="title"><%= data %></h1>
@@ -23,22 +23,21 @@
           <% } %>
         </div>
       </div>
-        <% blogs.forEach(function(blog){ %>
         <div class="content-center">
         </div>
       </div>
       <div class="section section-about">
-        
+        <% blogs.forEach(function(blog){ %>
         <div class="container">
           <% if(locals.isLoggedIn) {%>
-            <div class="mb-5 text-right">
+            <div class="text-right">
               <a href="/admin/edit/<%= blog.id %>" class="btn btn-primary">แก้ไข</a>
               <a href="/admin/delete/<%= blog.id %>" class="btn btn-danger">ลบ</a>
             </div>   
             <% }%>
           <div class="row">
             <div class="col-md-10 ml-auto mr-auto text-center" style="padding: 50px">
-              <img src="/images/<%= blog.id %>/headers/<%= blog.img_header %>" height="100px" >
+              <img src="/images/<%= blog.id %>/headers/<%= blog.img_logo %>" height="100px" >
              
               <h2 class="title"><%=blog.title %></h2>
               <div class="ml-auto mr-auto text-center mb-4" id="btn">
