@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../header') %>
+    <title>3BB</title> 
+</head>
+<body class="landing-page sidebar-collapse">
+    <%- include('../navbar') %>
+    <div class="wrapper">
+      <form action="/admin/profileadd" method="post" enctype="multipart/form-data">
+      <div class="section rounded">
+        <div class="container"> 
+          <div class="row">
+            <div class="col-md-10 ml-auto col-xl-8 mr-auto">
+              <p class="title">ข้อมูลพนักงาน</p>
+              <div class="main img-raised rounded">
+                <div class="card-body rounded">
+                  <!-- Tab panes -->
+                  <div class="tab-content row">
+                    <div class="form-group py-2 col-lg-3">
+                        <label for="">รหัสพนักงาน</label>
+                        <input type="text" name="emp_id" value="<%= (locals.old_data) ? old_data.em : ''%>" class="form-control" >
+                    </div>
+                  </div>
+                  <div class="tab-content row">
+                    <div class="form-group py-2 col">
+                        <label for="">ชื่อจริง</label>
+                        <input type="text" name="firstName" value="" class="form-control" >
+                    </div>
+                    <div class="form-group py-2 col">
+                        <label for="">นามสกุล</label>
+                        <input type="text" name="lastName" value="" class="form-control" >
+                    </div>
+                  </div>
+                  <div class="tab-content row">
+                    <div class="form-group py-2 col">
+                        <label for="">ชื่อบริษัท</label>
+                        <input type="text" name="company" value="บริษัท ทริปเปิลที อินเทอร์เน็ต จำกัด" class="form-control" disabled>
+                    </div>
+                    <div class="form-group py-2 col">
+                        <label for="">พื้นที่</label>
+                        <input type="text" name="area" value="" class="form-control" >
+                    </div>
+                    <div class="form-group py-2 col">
+                        <label for="">จังหวัด</label>
+                        <input type="text" name="province" value="" class="form-control" >
+                    </div>
+                  </div>
+                  <div class="tab-content row">
+                    <div class="form-group py-2 col">
+                        <label for="">ที่อยู่บริษัท</label>
+                        <input type="text" name="address" value="" class="form-control" >
+                    </div>
+                  </div>
+                  <div class="tab-content row">
+                    <div class="form-group py-2 col">
+                        <label for="">เบอร์โทร</label>
+                        <input type="text" name="telNum" value="" class="form-control" >
+                    </div>
+                    <div class="form-group py-2 col">
+                        <label for="">อีเมล</label>
+                        <input type="text" name="email" value="" class="form-control" >
+                    </div>
+                    <div class="form-group py-2 col">
+                        <label for="">Line URL</label>
+                        <input type="text" name="line_url" value="" class="form-control" >
+                    </div>
+                    
+                  </div>
+                  <div class="tab-content row">
+                    <div class=" py-2 col">
+                    <label>Line QR Code</label>
+                    <input type="file" name="line_qrcode" accept='image/*' class="form-control-file" id="">
+                    </div>
+                  </div>
+                  <div class="sumbit text-center">
+                    <input type="submit" class="btn btn-primary py-2 mb-3" name="" id="" value="บันทึก">
+                  </div>
+                </div>
+              </div>
+        </form>
+</body>
+</html>

@@ -1,0 +1,100 @@
+  <script src="https://kit.fontawesome.com/32597fd7ba.js" crossorigin="anonymous"></script>
+
+  <link rel="stylesheet" href="/assets/css/style.css">
+  <!-- Footer -->
+  <footer class="text-lg-start bg-light text-muted">
+      <!-- Section: Links  -->
+      <section class="">
+        <div class="container text-md-start mt-5">
+          <!-- Grid row -->
+          <div class="row mt-3">
+            <!-- Grid column -->
+            <div class="col-md-3 col-lg-3 col-xl-3 mb-4 mt-5">
+              <!-- Content -->
+              <h5 class="text-uppercase fw-bold mb-4">
+                <% blogs.forEach(function(blog){ %>
+                <p style="font-weight: bold ;">ADDRESS :</ps>
+              </h5>
+              <p>บริษัท ทริปเปิลที อินเทอร์เน็ต จำกัด</p>
+              <p><b>พื้นที่ :</b> <%= blog.area %></p>
+              <p><b>จังหวัด :</b> <%= blog.province %></p>
+              <p><b>ที่อยู่ :</b> <%= blog.address %></p>
+              <div class="telNum" id="telNum">
+                <h5 class="fw-bold mb-2">เบอร์ติตต่อ :</h5>
+              </div>
+            </div>
+            <!-- Grid column -->
+    
+            <!-- Grid column -->
+            <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4 mt-5">
+              <!-- Links -->
+              <h5 class="text-uppercase fw-bold mb-4">
+                <p style="font-weight: bold ;">e-mail :</ps>
+              </h5>
+              <p>
+                  <a href="mailto:<%= blog.email %>"><%= blog.email %></a>
+              </p>
+            </div>
+            <!-- Grid column -->
+    
+            <!-- Grid column -->
+            <div class="social-icons col-md-3 col-lg-2 col-xl-2 mx-auto mb-4 mt-5">
+              <!-- Links -->
+              <h5 class="text-uppercase fw-bold mb-4">
+                <p style="font-weight: bold ;">social media :</ps>
+              </h5>
+              <p>
+                <a href="https://<%= blog.line_url %>" class="social-icons"><i class="fab fa-line fa-3x"></i></a>
+                <a href="https://th-th.facebook.com/3BBOfficialPage/" class="social-icons"><i class="fab fa-facebook fa-3x mr-3"></i></a>
+              </p>
+            </div>
+            <!-- Grid column -->
+    
+            <!-- Grid column -->
+            <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4 mt-5">
+              <!-- Links -->
+              <h5 class="text-uppercase fw-bold mb-4">
+                <p style="font-weight: bold ;">ติดต่อ/สอบถาม :</ps>
+              </h5>
+              <a href="https://<%= blog.line_url %>"><img class="d-block" src="/images/<%= blog.id %>/qrcode/<%= blog.line_qrcode %>" alt="Line QRCODE" height="150px"></a>
+              <% }) %>
+            <!-- Grid column -->
+          </div>
+          <!-- Grid row -->
+        </div>
+        <div class="copyright pull-right" id="copyright">
+          &copy;
+          <script>
+            document.getElementById('copyright').appendChild(document.createTextNode(new Date().getFullYear()))
+          </script>, Designed by
+          <a href="https://www.invisionapp.com" target="_blank">Invision</a>. Coded by
+          <a href="https://www.creative-tim.com" target="_blank">Creative Tim</a>.
+        </div>
+      </section>
+      
+      <!-- Section: Links  -->
+    </footer>
+    <!-- Footer -->
+
+  <!--   Core JS Files   -->
+  <script src="../../assets/js/core/jquery.min.js" type="text/javascript"></script>
+  <script src="../../assets/js/core/popper.min.js" type="text/javascript"></script>
+  <script src="../../assets/js/core/bootstrap.min.js" type="text/javascript"></script> 
+  <!--  Plugin for Switches, full documentation here: http://www.jque.re/plugins/version3/bootstrap.switch/ -->
+  <script src="../../assets/js/plugins/bootstrap-switch.js"></script>
+  <!--  Plugin for the Sliders, full documentation here: http://refreshless.com/nouislider/ -->
+  <script src="../../assets/js/plugins/nouislider.min.js" type="text/javascript"></script>
+  <!-- Control Center for Now Ui Kit: parallax effects, scripts for the example pages etc -->
+  <script src="../../assets/js/now-ui-kit.js?v=1.3.0" type="text/javascript"></script>
+  <script type="text/javascript">
+    $(document).ready(()=>{
+      '<%blogs.forEach(function(blog){%>'
+        $telNumber = '<%=blog.telNum%>'
+      '<%})%>'
+      $1 = $telNumber.substr(0,3);
+      $2 = $telNumber.substr(3,3);
+      $3 = $telNumber.substr(6,4);
+      $text = '<p><b>เบอร์มือถือ : </b><a href="tel:'+$telNumber+'">'+$1+'-'+$2+'-'+$3+'</a></p>'
+      $('#telNum').html($text);
+    })
+  </script>

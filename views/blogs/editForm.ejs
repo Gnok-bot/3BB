@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../header') %>
+    <title>แก้ไขฟอร์ม</title> 
+</head>
+<body class="landing-page sidebar-collapse">
+    <%- include('../navbar') %>
+    <div class="wrapper">
+      <div class="page-header page-header-small">
+        <div class="page-header-image" data-parallax="true" style="background-image: url('../../assets/img/bg6.jpg');">
+        </div>
+        <div class="content-center">
+          <div class="container">
+            <h1 class="title"><%= data %></h1>
+          </div>
+          <div class="buttons">
+            <a href="/admin/blogs/" class="btn btn-primary">ย้อนกลับ</a>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="section section-about">
+        <div class="container">
+            <form action="/admin/update" method="POST" enctype="multipart/form-data">
+                <% blog.forEach(function(db){ %>
+                <div class="wrapper">
+                <p class="mt-5">เลือกรูป head banner</p>
+                <div class="row mb-2 mt-2 text-center">
+                    <div class="form-group py-2 col-4">
+                        <img src="/assets/img/bg3.jpg" alt="first pic" srcset="">
+                        <div class="form-check">
+                            <input type="radio" class="form-check-input" name="option" id="radio1" value="option1">
+                            <label  for="radio1">Picture 1</label>
+                        </div>
+                    </div>  
+                    <div class="form-group py-2 col-4">
+                        <img src="/assets/img/bg4.jpg" alt="" srcset="">
+                        <div class="form-check">
+                            <input type="radio" class="form-check-input" name="option" id="radio2" value="option2">
+                            <label  for="radio2">Picture 2</label>
+                        </div>
+                    </div>   
+                    <div class="form-group py-2 col-4">
+                        <img src="/assets/img/bg6.jpg" alt="" srcset="">
+                        <div class="form-check">
+                            <input type="radio" class="form-check-input" name="option" id="radio3" value="option3">
+                            <label  for="radio3">Picture 3</label>
+                        </div>
+                    </div>   
+                </div>
+            </div>
+                <div class="row">
+                    <div class="form-group py-2 col">
+                        <p>Title</p>
+                        <input type="text" name="title" class="form-control" value="<%= db.title%>" required>
+                    </div>
+                    <div class="form-group py-2 col">
+                        <p for="">Sub-title</p>
+                        <input type="text" name="subtitle" class="form-control" value="<%= db.subtitle%>" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <p>Upload Logo</p>
+                        <img src="/images/<%= db.id %>/headers/<%= db.img_header %>" height="150px" class="mb-2"> 
+                        <input type="file" name="img_header" accept='image/*' class="form-control-file" id="">
+                        <input type="hidden" name="img_headerPrev" value="<%=db.img_header%>" class="form-control-file" id="">
+                    </div>
+                    <div class="col">
+                        <input type="checkbox" name="" id="banners_checkbox" class="form-check-input ml-0" style="margin-top:8px"> 
+                        <p class="ml-4">ใช้ Slide banners</ย><br>
+                        <p class="form-label">Select Slide Banners (กรุณาใส่รูปภาพ 3 ภาพ)</p>
+                        <input class="form-control-file mb-3 banners" name="img" type="file" accept="image/*" multiple disabled="disabled">
+                        <input class="form-control-file mb-3" name="img_banner[]" type="hidden" value="<%= db.img_banner1 %>">
+                        <input class="form-control-file mb-3" name="img_banner[]" type="hidden" value="<%= db.img_banner2 %>">
+                        <input class="form-control-file mb-3" name="img_banner[]" type="hidden" value="<%= db.img_banner3 %>">
+                    </div>  
+                </div> 
+                <hr>
+                <div class=" form-group py-2">
+                    <p>รายละเอียดโปรโมชั่น</p>
+                    <textarea name="promoDesc" id="summernote" cols="30" rows="10" ></textarea>
+                </div>
+                <div>
+                    <p>รูปโปรโมชั่น</p>
+                    <img src="/images/<%= db.id %>/promos/<%= db.promoImg %>" height="150px" class="mb-2"> 
+                    <input type="file" name="promotionImg" accept='image/*' class="form-control-file" id="">
+                </div>
+                <hr>
+                <div class="button">
+                    <button type="button" class="btn btn-success addPackages " id="addPackages">เพิ่มแพ็กเกจ</button>
+                    <hr>
+                </div>
+                <div id="dynamic_field" class="dynamic_field"></div>
+                <% packages.forEach(function(pk, i){ %>
+                <div id="input_field<%=i%>" class="input_field">
+                    <input type="hidden" value="<%= pk.packageNo %>" name="package[<%=i%>][PackageNo]">  
+                    
+                    <!-- Modal -->
+                    <div id="delete<%= pk.packageNo %>" class="modal fade" tabindex="-1" role="dialog" aria-haspopup="true">
+                        <div class="modal-dialog">
+                            <div class="modal-content">
+                                <div class="modal-header d-flex justify-content-center"> 
+                                    <div>
+                                        <h5 class="modal-title" style="color: red;">กรุณายืนยัน</h5>
+                                    </div>  
+                                </div>
+                                <div class="modal-body">
+                                    <p>คุณต้องการที่จะลบแพ็กเกจนี้ใช่หรือไม่?
+                                    </p>
+                                    <p class="text-secondary" style="font-size:12px ;">เมื่อกดยืนยันแล้ว จะไม่สามารถกู้ขอมูลกลับมาได้</p>
+                                </div>
+                                <div class="modal-footer">
+                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">ยกเลิก</button>
+                                    <input type="hidden" value="<%= pk.packageNo %>">
+                                    <a href="/admin/delete-pk/<%= pk.packageNo %>"><button type="button" class="btn btn-primary">ยืนยัน</button></a>
+                                </div>  
+                            </div>
+                        </div>
+                    </div>
+                    <!-- End Modal -->
+                    <div class="row" id="div<%=i+1%>">
+                        <div class="form-group py-2 col">
+                            <p>ชื่อแพ็กเกจ</p> 
+                            <input type="text" name="package[<%=i%>][name]" class="form-control" value="<%=pk.packageName%>" required>
+                        </div>
+                        <div class="form-group py-2 col">
+                            <p>ราคาแพ็กเกจ</p> 
+                            <input type="text" name="package[<%=i%>][price]" class="form-control" value="<%=pk.packagePrice%>" required> 
+                        </div> 
+                    </div> 
+                    <div class="form-group py-2 mb-2"> 
+                        <p>รายละเอียดแพ็กเกจ</p> 
+                        <input type="text" name="package[<%=i%>][desc]" class="form-control" value="<%=pk.packageDesc%>" required> 
+                    </div> 
+                    <div> 
+                        <p>รูปแพ็กเกจ</p>
+                        <img src="/images/<%= pk.id %>/packages/<%= pk.packageImg %>" height="150px" class="mb-2"> 
+                        <input type="file" name="packageImg<%=pk.packageNo%>" accept='image/*' multiple class="form-control-file" id="packageImg<%=pk.packageNo%>"> 
+                    </div>
+                    <input type="hidden" value="<%= pk.packageImg %>" name="package[<%=i%>][packageImgPrev]">    
+                    <button type="button" class="btn btn-danger confirm-deleteBtn" id="confirm-deleteBtn" data-target="#delete<%= pk.packageNo %>" data-toggle="modal" >ลบแพ็กเกจ</button>
+                    <hr>
+                </div>
+                <% }) %>
+                <input type="hidden" value="<%= db.id %>" name="id">
+                <input type="hidden" value="<%= db.promoDesc %>" name="promoDescPrev">
+                <input type="hidden" value="<%= db.promoImg %>" name="promoImgPrev">
+                <% }) %>
+                    <div class="sumbit">
+                        <input type="submit" class="btn btn-primary py-2 mb-3" name="" id="" value="อัพเดท">
+                    </div>
+                </div>
+                
+            </div>
+            
+            </form>
+        </div>
+    </div>
+</body>  
+<script src="/assets/js/core/jquery-3.6.0.min.js" type="text/javascript"></script>
+<script src="/assets/js/core/bootstrap.min.js" type="text/javascript"></script> 
+<script src="/assets/js/summernote-lite.min.js"></script>
+<script type="text/javascript">
+      $('#summernote').summernote({
+        placeholder: 'พิมพ์ข้อความ',
+        tabsize: 2,
+        height: 100,
+        toolbar: [
+          ['style', ['style']],
+          ['font', ['bold', 'underline', 'italic', 'clear']],
+          ['color', ['color']],
+          ['para', ['ul', 'ol', 'paragraph']],
+          ['insert', ['link', 'picture', 'video']],
+          ['view', ['fullscreen', 'codeview', 'help']]
+        ]
+      });
+      $(document).ready(()=>{
+        '<% packages.forEach(function(pk, i){ %>'
+        var i='<%=i+1%>'
+        '<%})%>'
+        //initial field count
+        var max_field = 8;
+        var wrapper = $(".dynamic_field");
+        $('.addPackages').click(()=>{
+            if(i < max_field){
+                i++;
+                $(wrapper).append('<div class="input_field" id="input_field">\
+                    <button type="button" class="btn btn-danger removePackages" id="removePackages">ลบแพ็กเกจ</button> \
+                    <input type="hidden" value="'+i+'" name="package['+(i-1)+'][PackageNo]">  \
+                    <div class="row" id="div"><div class="form-group py-2 col"><p>ชื่อแพ็กเกจ</p> \
+                        <input type="text" name="package['+(i-1)+'][name]" class="form-control" required></div> \
+                            <div class="form-group py-2 col"> \
+                        <p>ราคาแพ็กเกจ</p> \
+                        <input type="text" name="package['+(i-1)+'][price]" class="form-control" required> \
+                    </div> \
+                </div> \
+                    <div class="form-group py-2 mb-2"> \
+                            <p>รายละเอียดแพ็กเกจ</p> \
+                            <input type="text" name="package['+(i-1)+'][desc]" class="form-control" required> \
+                    </div> \
+                    <div> \
+                            <p>Package Poster</p> \
+                            <input type="file" name="packageImg'+i+'" accept='+'image/*'+' multiple class="form-control-file" id="packageImg'+i+'"> \
+                    </div> \
+                    <hr></div>');
+
+            }else {console.log('out of limit');
+        }
+        });
+        $('body').on('click','.removePackages',function(e){
+            if(i>0){
+            $(this).closest(".input_field").remove();
+            i--
+            console.log(i);
+        }})
+
+        $(".confirm-deleteBtn").click(function() {
+            // console.log('click')
+            var info = $(this).parent().closest('div')
+            // console.log(info);
+            if(info.attr('id')=='input_field0') {$("#delete1").modal("show")}
+            else if(info.attr('id')=='input_field1') {$("#delete2").modal("show")}
+            else if(info.attr('id')=='input_field2') {$("#delete3").modal("show")}
+            else if(info.attr('id')=='input_field3') {$("#delete4").modal("show")}
+            else if(info.attr('id')=='input_field4') {$("#delete5").modal("show")}
+            else if(info.attr('id')=='input_field5') {$("#delete6").modal("show")}
+            else if(info.attr('id')=='input_field6') {$("#delete7").modal("show")}
+            else if(info.attr('id')=='input_field7') {$("#delete8").modal("show")}
+        });
+        
+    })
+    
+    
+    $(()=>{
+        enable_cb();
+        $("#banners_checkbox").click(enable_cb)
+    });
+
+    function enable_cb(){
+        $('input.banners').prop("disabled", !this.checked);
+    }
+
+    $(document).scroll(()=>{
+        var $nav = $('.fixed-top');
+        $nav.removeClass('navbar-transparent')
+    })
+</script>
+
+</html>
+
+

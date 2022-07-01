@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../header') %>
+    <title>3BB</title> 
+</head>
+<body class="landing-page sidebar-collapse">
+      <% if(locals.isLoggedIn) {%>
+        <%- include('../navbar') %>
+      <% } %>
+    <div class="wrapper">
+      <div class="page-header page-header-small">
+        <div class="page-header-image" data-parallax="true" style="background-image: url('../../assets/img/bg6.jpg');">
+        </div>
+        <div class="content-center">
+          <div class="container">         
+            <h1 class="title"><%= data %></h1>
+          </div>
+          <% if(locals.isLoggedIn) {%>
+          <div class="buttons">
+            <a href="/admin/add" class="btn btn-primary">เขียนบทความ</a>
+          </div>
+          <% } %>
+        </div>
+      </div>
+        <% blogs.forEach(function(blog){ %>
+        <div class="content-center">
+        </div>
+      </div>
+      <div class="section section-about">
+        
+        <div class="container">
+          <% if(locals.isLoggedIn) {%>
+            <div class="mb-5 text-right">
+              <a href="/admin/edit/<%= blog.id %>" class="btn btn-primary">แก้ไข</a>
+              <a href="/admin/delete/<%= blog.id %>" class="btn btn-danger">ลบ</a>
+            </div>   
+            <% }%>
+          <div class="row">
+            <div class="col-md-10 ml-auto mr-auto text-center" style="padding: 50px">
+              <img src="/images/<%= blog.id %>/headers/<%= blog.img_header %>" height="100px" >
+             
+              <h2 class="title"><%=blog.title %></h2>
+              <div class="ml-auto mr-auto text-center mb-4" id="btn">
+                <a href="tel:<%= blog.telNum%>"><button class="btn btn-warning"><i class="fa-solid fa-phone mr-2"></i><%= blog.telNum%></button></a>
+                <a href="//<%= blog.line_url%>"><button class="btn btn-success"><i class="fab fa-line fa-lg mr-2"></i>แอดไลน์สอบถามฟรี</button></a>
+              </div>
+              <h5 class="description"><%=blog.subtitle %></h5>
+            </div>
+          </div>
+          <% if(!blog.img_banner1 == ''){%>
+          <div class="section" id="carousel">
+            <div class="container">
+              <div class="text-center">
+                <h4>Highlights</h4>
+              </div>
+              <div class="row justify-content-center">
+                <div class="col-lg-8 col-md-12">
+                  <div id="carouselExampleIndicators" class="carousel slide" data-ride="carousel">
+                    <ol class="carousel-indicators">
+                      <li data-target="#carouselExampleIndicators" data-slide-to="0" class="active"></li>
+                      <li data-target="#carouselExampleIndicators" data-slide-to="1"></li>
+                      <li data-target="#carouselExampleIndicators" data-slide-to="2"></li>
+                    </ol>
+                    <div class="carousel-inner" role="listbox">
+                      <div class="carousel-item active">
+                        <img class="d-block" src="/images/<%= blog.id %>/banners/<%= blog.img_banner1 %>" alt="First slide">
+                      </div>
+                      <div class="carousel-item">
+                        <img class="d-block" src="/images/<%= blog.id %>/banners/<%= blog.img_banner2 %>" alt="Second slide">
+                      </div>
+                      <div class="carousel-item">
+                        <img class="d-block" src="/images/<%= blog.id %>/banners/<%= blog.img_banner3 %>" alt="Third slide">
+                      </div>
+                    </div>
+                    <a class="carousel-control-prev" href="#carouselExampleIndicators" role="button" data-slide="prev">
+                      <i class="now-ui-icons arrows-1_minimal-left"></i>
+                    </a>
+                    <a class="carousel-control-next" href="#carouselExampleIndicators" role="button" data-slide="next">
+                      <i class="now-ui-icons arrows-1_minimal-right"></i>
+                    </a>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+          <% } %>
+          <% promo.forEach(function(promo){ %>
+          <div class="separator separator-primary"></div>
+          <div class="section-story-overview">
+            <div class="row">
+              <div class="col-md-6">
+                <div class="image-container"><img src="/images/<%= promo.id %>/promos/<%= promo.promoImg %>" alt="" srcset=""></div>
+              </div>
+              <div class="col-md-6">
+                <!-- First image on the right side, above the article -->
+                <h3 class="title title-img">3BB Promotion | โปรโมชั่น 3BB </h3>
+                <%- promo.promoDesc %>
+                <p>ตรวจสอบพื้นที่ 3BB <a href="//<%= blog.line_url%>">คลิกที่นี่ได้เลย</a></p>
+              </div>
+            </div>
+          </div>
+          <div id="info-areas">
+            <div class="tim-title"> 
+                <h3 class="title title-img">3BB Packages | แพ็กเกจ 3BB</h3>
+            </div>
+            <% }) %>
+            <div class="d-flex justify-content-center row">
+              <% packages.forEach(function(packages){ %>
+              <div class="col-md-3">
+                <div class="info">
+                     <div class="description">
+                         <img class="d-block img-raised" src="/images/<%= packages.id %>/packages/<%= packages.packageImg %>">
+                         <h4 class="title"> <%= packages.packageName %></h4>
+                         <p><%= packages.packageDesc %></p>
+                         <p>ราคาเริ่มต้น <%= packages.packagePrice %> บาท/เดือน</p>
+                         <a href="//<%= blog.line_url%>"><button class="btn btn-info">สมัครบริการที่นี่</button></a>
+                     </div>
+                </div>
+             </div>
+             <% }) %>
+            </div>  
+        </div>
+      </p>
+    </div> 
+    <%- include('footer') %> 
+    <% }) %>
+    
+</body>
+</html>
+
+<script type="text/javascript">
+  $(document).ready(()=>{
+    '<%blogs.forEach(function(blog){%>'
+      $telNumber = '<%=blog.telNum%>'
+      $line_url = '<%= blog.line_url%>'
+    '<%})%>'
+    $1 = $telNumber.substr(0,3);
+    $2 = $telNumber.substr(3,3);
+    $3 = $telNumber.substr(6,4);
+    $text = '<a href="tel:'+$telNumber+'"><button class="btn btn-warning"><i class="fa-solid fa-phone mr-2"></i>'+$1+'-'+$2+'-'+$3+'</button></a> \
+             <a href="//'+$line_url+'"><button class="btn btn-success"><i class="fab fa-line fa-lg mr-2"></i>แอดไลน์สอบถามฟรี</button></a>'
+    $('#btn').html($text);
+  })
+</script>

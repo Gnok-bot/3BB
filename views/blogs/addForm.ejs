@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <%- include('../header') %>
+    <title>เพิ่มข้อมูล</title> 
+</head>
+<body class="landing-page sidebar-collapse">
+    <%- include('../navbar') %>
+    <div class="wrapper">
+      <div class="page-header page-header-small">
+        <div class="page-header-image" data-parallax="true" style="background-image: url('../assets/img/bg6.jpg');">
+        </div>
+        <div class="content-center">
+          <div class="container">
+            <h1 class="title"><%= data %></h1>
+          </div>
+          <div class="buttons">
+            <a href="/admin/blogs/" class="btn btn-primary">ย้อนกลับ</a>
+          </div>
+        </div>
+      </div>
+    <div class="section section-about">
+        <div class="container">
+            <form action="/admin/add" method="POST" enctype="multipart/form-data">
+                <div class="row">
+                    <div class="form-group py-2 col">
+                        <p>Title</p>
+                        <input type="text" name="title" class="form-control" id="" required>
+                    </div>
+                    <div class="form-group py-2 col">
+                        <p>Sub-title</p>
+                        <input type="text" name="subtitle" class="form-control" id="" required>
+                    </div>
+                </div>
+                <div class="row">
+                    <div class="col">
+                        <p>Upload Logo</p>
+                        <input type="file" name="img_header" accept='image/*' class="form-control-file" id="" required>
+                    </div>
+                    <div class="col">
+                        <input type="checkbox" name="" id="banners_checkbox" class="form-check-input ml-0"> 
+                        <p class="ml-4">ใช้ Slide banners</p>
+                        <p class="form-label">Select Slide Banners (กรุณาใส่รูปภาพ 3 ภาพ)</p>
+                        
+                        <input class="form-control-file mb-3 banners" name="img" id="banners" type="file" accept="image/*" multiple disabled="disabled">
+                    </div>  
+                </div> 
+                <hr>
+                <div class=" form-group py-2">
+                    <p>รายละเอียดโปรโมชั่น</p>
+                    <textarea name="promoDesc" id="summernote" cols="30" rows="10" required></textarea>
+                </div>
+                <div>
+                    <p>รูปโปรโมชั่น</p>
+                    <input type="file" name="promotionImg" accept='image/*' class="form-control-file" id="" required>
+                </div>
+                <hr>
+                <div class="button">
+                    <button type="button" class="btn btn-success addPackages " id="addPackages">เพิ่มแพ็กเกจ</button>
+                    <hr>
+                </div>
+                <div id="dynamic_field" class="dynamic_field"></div>
+                    
+                    <div class="sumbit">
+                        <input type="submit" class="btn btn-primary py-2 mb-3" name="" id="" value="บันทึก">
+                    </div>
+                </div>
+                
+            </div>
+            
+            </form>
+        </div>
+    </div>
+</body>
+
+<script src="/assets/js/core/jquery-3.6.0.min.js"></script>
+<script src="/assets/js/summernote-lite.min.js"></script>
+<script type="text/javascript">
+      $('#summernote').summernote({
+        placeholder: 'พิมพ์ข้อความ',
+        tabsize: 2,
+        height: 100,
+        toolbar: [
+          ['style', ['style']],
+          ['font', ['bold', 'underline', 'italic', 'clear']],
+          ['color', ['color']],
+          ['para', ['ul', 'ol', 'paragraph']],
+          ['insert', ['link', 'picture', 'video']],
+          ['view', ['fullscreen', 'codeview', 'help']]
+        ]
+      });
+    $(document).ready(()=>{
+        var i=0; //initial field count
+        var max_field = 8;
+        var wrapper = $(".dynamic_field");
+        
+        $('.addPackages').click(()=>{
+            if(i < max_field){
+                i++;
+                $(wrapper).append('<div class="input_field" id="input_field">\
+                    <button type="button" class="btn btn-danger removePackages" id="removePackages">ลบแพ็กเกจ</button> \
+                    <div class="row" id="div"><div class="form-group py-2 col"><p>ชื่อแพ็กเกจ</p> \
+                        <input type="text" name="packageName[]" class="form-control" required></div> \
+                            <div class="form-group py-2 col"> \
+                        <p>ราคาแพ็กเกจ</p> \
+                        <input type="text" name="packagePrice[]" class="form-control" required> \
+                    </div> \
+                </div> \
+                    <div class="form-group py-2 mb-2"> \
+                            <p>รายละเอียดแพ็กเกจ</p> \
+                            <input type="text" name="packageDesc[]" class="form-control" required> \
+                    </div> \
+                    <div> \
+                            <p>Package Poster</p> \
+                            <input type="file" name="packageImg" accept='+'image/*'+'multiple class="form-control-file" id="" required> \
+                    </div> \
+                    <hr></div>');
+                
+            }
+        });
+        
+        $('body').on('click','.removePackages',function(e){
+            if(i>0){
+            $(this).closest(".input_field").remove();
+            i--
+            console.log(i);
+        }})
+    })
+
+    $(()=>{
+        enable_cb();
+        $("#banners_checkbox").click(enable_cb)
+    });
+
+    function enable_cb(){
+        $('input.banners').prop("disabled", !this.checked);
+    }
+    $(document).scroll(()=>{
+        var $nav = $('.fixed-top');
+        $nav.removeClass('navbar-transparent')
+    })
+</script>
+
+</html>
+
+
