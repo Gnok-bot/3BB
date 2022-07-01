@@ -1,4 +1,5 @@
 node_modules/
+bin/
 public/assets/img
 public/images
 .env
