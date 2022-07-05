@@ -153,7 +153,6 @@ router.post('/adduser', ifNotLoggedIn, [
       let allErr = validation_result.errors.map((error) => {
         return error.msg;
       })
-
       res.render('login', {
         register_error: allErr,
         old_data: req.body
@@ -264,8 +263,7 @@ router.post('/profileadd', upload.single('line_qrcode'), (req, res, next) => {
   const line_qrcode = req.file.filename
   const { emp_id, firstName, lastName, email, telNum, line_url, area, province, address } = req.body
   Blogs.execute("INSERT INTO usersinfo (id,emp_id,firstName,lastName,email,telNum,line_url,line_qrcode,area,province,address) \
-  VALUES (?,?,?,?,?,?,?,?,?,?,?)", [id, emp_id, firstName, lastName, email, telNum, line_url, line_qrcode, area, province, address]
-  )
+  VALUES (?,?,?,?,?,?,?,?,?,?,?)", [id, emp_id, firstName, lastName, email, telNum, line_url, line_qrcode, area, province, address])
     .then(
       res.redirect('/admin/profile'))
     .catch((err) => {
@@ -488,7 +486,6 @@ router.post('/update', imgUpdate, function (req, res, next) {
 
     if (typeof req.files['packageImg' + i] !== 'undefined') {
       if (req.files === 'packageImg' + i != null) {
-        // console.log('new image'+i,req.files['packageImg'+i][0].filename);
         packageImg = req.files['packageImg' + i][0].filename
         if (req.body.package[i - 1].packageImgPrev != null) {
           const path = './public/images/' + req.session.id + '/packages/' + req.body.package[i - 1].packageImgPrev
@@ -498,10 +495,8 @@ router.post('/update', imgUpdate, function (req, res, next) {
         }
       } else { if (err) throw err; }
     } else {
-      // console.log("Prev Pic with no new img",i,"= ",req.body.package[i-1].packageImgPrev); 
       packageImg = req.body.package[i - 1].packageImgPrev
     }
-    // console.log('image upload: ',packageImg);
     Blogs.execute("INSERT INTO packages (id,packageNo,packageName,packagePrice,packageDesc,packageImg) \
       VALUES (?,?,?,?,?,?)" , [id, i, packageName, packagePrice, packageDesc, packageImg])
       .then(
@@ -516,12 +511,9 @@ router.get('/delete-pk/:packageNo', ifNotLoggedIn, function (req, res, next) {
   // DELETE DATA
   const id = req.session.id
   packageNo = req.params.packageNo;
-  // console.log(req.params);
-  // console.log(req);
   Blogs.execute('SELECT packageImg FROM packages WHERE packageNo = ? AND id= ?', [packageNo, id])
     .then((img) => {
       var imgName = img[0][0].packageImg
-      // console.log(imgName);
       const path = './public/images/' + req.session.id + '/packages/' + imgName
       fs.remove(path, (err) => {
         if (err) throw err;

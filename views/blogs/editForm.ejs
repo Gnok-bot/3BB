@@ -83,7 +83,7 @@
                         <input class="form-control-file mb-3" name="img_banner[]" type="hidden" value="<%= db.img_banner2 %>">
                         <input class="form-control-file mb-3" name="img_banner[]" type="hidden" value="<%= db.img_banner3 %>">
                         <input type="checkbox" name="cardinfo" id="card-checkbox" class="form-check-input ml-0 mt-2"> 
-                        <p class="ml-4">เปิด/ปิด การใช้งาน Card-Info</ย><br>
+                        <p class="ml-4">เปิดการใช้งาน Card-Info</p><br>
                     </div>  
                 </div> 
                 <hr>
@@ -188,6 +188,7 @@
         ]
       });
       $(document).ready(()=>{
+        var i=0;
         '<% packages.forEach(function(pk, i){ %>'
         var i='<%=i+1%>'
         '<%})%>'
@@ -270,7 +271,4 @@
         }
     })
 </script>
-
 </html>
-
-

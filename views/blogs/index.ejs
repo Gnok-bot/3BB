@@ -17,9 +17,9 @@
             <h1 class="title"><%= data %></h1>
           </div>
           <% if(locals.isLoggedIn) {%>
-          <div class="buttons">
-            <a href="/admin/add" class="btn btn-primary">เขียนบทความ</a>
-          </div>
+            <div class="buttons">
+              <a href="/admin/add" class="btn btn-primary">เขียนบทความ</a>
+            </div>
           <% } %>
         </div>
       </div>
@@ -169,7 +169,6 @@
     <% }) %>
 </body>
 </html>
-
 <script type="text/javascript">
   $(document).ready(()=>{
     '<%blogs.forEach(function(blog){%>'

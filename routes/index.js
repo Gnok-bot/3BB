@@ -20,7 +20,6 @@ router.get('/15',function(req, res, next) {
           res.render("blogs/index", { data: "3BB ADS PAGE",bg: bg, blogs: blogResult, promo: promoResult, packages: packResult });
         })
       })
-      // 
     }).catch((err) => {
       if (err) throw err;
     })
@@ -39,7 +38,6 @@ router.get('/14', function(req, res, next) {
         res.render("blogs/index", { data: "3BB ADS PAGE",bg: bg, blogs: blogResult, promo: promoResult, packages: packResult });
       })
     })
-    // 
   }).catch((err) => {
     if (err) throw err;
   })

@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
   <%- include('../header') %>
-    <title>3BB</title> 
+    <title>User Profile</title> 
 </head>
 <body class="landing-page sidebar-collapse" style="padding-top: 40px;">
     <%- include('../navbar') %>
@@ -80,8 +80,8 @@
                   </div>
                   <div class="tab-content row">
                     <div class=" py-2 col">
-                    <label>Line QR Code</label>
-                    <img class="d-block img-raised" src="/images/<%= blog.id %>/qrcode/<%= blog.line_qrcode %>" alt="Line QRCODE" height="150px">
+                      <label>Line QR Code</label>
+                      <img class="d-block img-raised" src="/images/<%= blog.id %>/qrcode/<%= blog.line_qrcode %>" alt="Line QRCODE" height="150px">
                     </div>
                     <div style="margin: 140px 20px 0 0;">
                       <a href="/admin/profile/edit?:<%= blog.id %>"><button class="btn btn-primary">แก้ไข</button></a>
