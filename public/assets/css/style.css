@@ -617,7 +617,37 @@ b{
   }
 }
 
+.card {
+  transition: .5s ease;
+  color: rgb(93, 93, 93);
+  font-size: 12px;
+}
 
+.card a{
+  transition: .5s ease;
+  color: black;
+  font-size: 16px;
+}
 
+.card .card-title{
+  font-weight: bold;
+  font-size: 16px;
+  padding-bottom: 15px;
+}
 
+.card:hover {
+  transition: .5s ease;
+  background-color: rgb(255, 180, 40);
+  color: white;
+}
+
+.card:hover .card-title {
+  transition: .5s ease;
+  color: rgb(57, 57, 176);
+}
+
+.card:hover .fas{
+  transition: .5s ease;
+  color: white
+}
 

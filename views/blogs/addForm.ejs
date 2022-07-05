@@ -28,7 +28,7 @@
       </div>
     <div class="section section-about">
         <div class="container">
-            <form action="/admin/add" method="POST" enctype="multipart/form-data">
+            <form action="/admin/add" method="POST" class="needs-validation" enctype="multipart/form-data">
                 <div class="wrapper">
                     <p class="mt-5">เลือกรูป head banner</p>
                     <div class="row mb-2 mt-2 text-center">
@@ -58,7 +58,7 @@
                 <div class="row">
                     <div class="form-group py-2 col">
                         <p>Title</p>
-                        <input type="text" name="title" class="form-control" id="" required>
+                        <input type="text" name="title" class="form-control" required>
                     </div>
                     <div class="form-group py-2 col">
                         <p>Sub-title</p>
@@ -133,7 +133,6 @@
             if(i < max_field){
                 i++;
                 $(wrapper).append('<div class="input_field" id="input_field">\
-                    <button type="button" class="btn btn-danger removePackages" id="removePackages">ลบแพ็กเกจ</button> \
                     <div class="row" id="div"><div class="form-group py-2 col"><p>ชื่อแพ็กเกจ</p> \
                         <input type="text" name="packageName[]" class="form-control" required></div> \
                             <div class="form-group py-2 col"> \
@@ -149,6 +148,7 @@
                             <p>Package Poster</p> \
                             <input type="file" name="packageImg" accept='+'image/*'+'multiple class="form-control-file" id="" required> \
                     </div> \
+                    <button type="button" class="btn btn-danger removePackages" id="removePackages">ลบแพ็กเกจ</button> \
                     <hr></div>');
                 
             }
@@ -185,6 +185,25 @@
             $nav.addClass('navbar-transparent')
         }
     })
+    (function () {
+  'use strict'
+
+  // Fetch all the forms we want to apply custom Bootstrap validation styles to
+  var forms = document.querySelectorAll('.needs-validation')
+
+  // Loop over them and prevent submission
+  Array.prototype.slice.call(forms)
+    .forEach(function (form) {
+      form.addEventListener('submit', function (event) {
+        if (!form.checkValidity()) {
+          event.preventDefault()
+          event.stopPropagation()
+        }
+
+        form.classList.add('was-validated')
+      }, false)
+    })
+})()
 </script>
 
 </html>

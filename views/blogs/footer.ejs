@@ -5,11 +5,11 @@
   <footer class="text-lg-start bg-light text-muted">
       <!-- Section: Links  -->
       <section class="">
-        <div class="container text-md-start mt-5">
+        <div class="container text-md-start mt-3">
           <!-- Grid row -->
           <div class="row mt-3">
             <!-- Grid column -->
-            <div class="col-md-3 col-lg-3 col-xl-3 mb-4 mt-5">
+            <div class="col-md-3 col-lg-3 col-xl-3 mb-4 mt-3">
               <!-- Content -->
               <h5 class="text-uppercase fw-bold mb-4">
                 <% blogs.forEach(function(blog){ %>
@@ -19,14 +19,13 @@
               <p><b>พื้นที่ :</b> <%= blog.area %></p>
               <p><b>จังหวัด :</b> <%= blog.province %></p>
               <p><b>ที่อยู่ :</b> <%= blog.address %></p>
-              <div class="telNum" id="telNum">
-                <h5 class="fw-bold mb-2">เบอร์ติตต่อ :</h5>
+              <div class="telNum" id="telNum">                
+              <h5 class="fw-bold mb-2">เบอร์ติตต่อ :</h5>
               </div>
             </div>
             <!-- Grid column -->
-    
             <!-- Grid column -->
-            <div class="col-md-2 col-lg-2 col-xl-2 mx-auto mb-4 mt-5">
+            <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4 mt-3">
               <!-- Links -->
               <h5 class="text-uppercase fw-bold mb-4">
                 <p style="font-weight: bold ;">e-mail :</ps>
@@ -38,7 +37,7 @@
             <!-- Grid column -->
     
             <!-- Grid column -->
-            <div class="social-icons col-md-3 col-lg-2 col-xl-2 mx-auto mb-4 mt-5">
+            <div class="social-icons col-md-3 col-lg-2 col-xl-2 mx-auto mb-4 mt-3">
               <!-- Links -->
               <h5 class="text-uppercase fw-bold mb-4">
                 <p style="font-weight: bold ;">social media :</ps>
@@ -49,9 +48,9 @@
               </p>
             </div>
             <!-- Grid column -->
-    
+
             <!-- Grid column -->
-            <div class="col-md-4 col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4 mt-5">
+            <div class="col-md- col-lg-3 col-xl-3 mx-auto mb-md-0 mb-4 mt-3">
               <!-- Links -->
               <h5 class="text-uppercase fw-bold mb-4">
                 <p style="font-weight: bold ;">ติดต่อ/สอบถาม :</ps>
@@ -61,17 +60,16 @@
             <!-- Grid column -->
           </div>
           <!-- Grid row -->
-        </div>
-        <div class="copyright pull-right" id="copyright">
-          &copy;
-          <script>
-            document.getElementById('copyright').appendChild(document.createTextNode(new Date().getFullYear()))
-          </script>, Designed by
-          <a href="https://www.invisionapp.com" target="_blank">Invision</a>. Coded by
-          <a href="https://www.creative-tim.com" target="_blank">Creative Tim</a>.
-        </div>
       </section>
-      
+      <div class="copyright pull-right" id="copyright">
+        &copy;
+        <script>
+          document.getElementById('copyright').appendChild(document.createTextNode(new Date().getFullYear()))
+        </script>, Designed by
+        <a href="https://www.invisionapp.com" target="_blank">Invision</a>. Coded by
+        <a href="https://www.creative-tim.com" target="_blank">Creative Tim</a>.
+      </div>
+    </div>
       <!-- Section: Links  -->
     </footer>
     <!-- Footer -->
