@@ -617,13 +617,13 @@ b{
   }
 }
 
-.card {
+.card-info {
   transition: .5s ease;
   color: rgb(93, 93, 93);
   font-size: 12px;
 }
 
-.card a{
+.card-info a{
   transition: .5s ease;
   color: black;
   font-size: 16px;
@@ -635,19 +635,26 @@ b{
   padding-bottom: 15px;
 }
 
-.card:hover {
+.card-info:hover {
   transition: .5s ease;
   background-color: rgb(255, 180, 40);
   color: white;
 }
 
-.card:hover .card-title {
+.card-info:hover .card-title {
   transition: .5s ease;
   color: rgb(57, 57, 176);
 }
 
-.card:hover .fas{
+.card-info:hover .fas{
   transition: .5s ease;
   color: white
 }
 
+.card-info:hover a:hover{
+  color: #9b9595;
+}
+
+.not-enb{
+  color: #c3c2c2;
+}

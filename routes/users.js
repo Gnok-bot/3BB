@@ -348,6 +348,10 @@ router.post('/add', imgUpload, function (req, res, next) {
   title = req.body.title,
     subtitle = req.body.subtitle,
     img_logo = req.files['img_logo'][0].filename
+    if(req.body.cardinfo != null){
+      cardinfo = req.body.cardinfo
+    } else cardinfo = ''
+    console.log(cardinfo);
   //Banner Img
   req.files['img'] != null ? (
     img_banner1 = req.files['img'][0].filename,
@@ -381,8 +385,8 @@ router.post('/add', imgUpload, function (req, res, next) {
       })
   }
   // INSERT DATA INTO TABLE BLOGS
-  Blogs.execute("INSERT INTO blogs (id, title, subtitle, img_header, img_logo, img_banner1, img_banner2, img_banner3) values \
-    (?,?,?,?,?,?,?,?)", [id, title, subtitle, img_header, img_logo, img_banner1, img_banner2, img_banner3])
+  Blogs.execute("INSERT INTO blogs (id, title, subtitle, img_header, img_logo, img_banner1, img_banner2, img_banner3, cardinfo) values \
+    (?,?,?,?,?,?,?,?,?)", [id, title, subtitle, img_header, img_logo, img_banner1, img_banner2, img_banner3, cardinfo])
     .then().catch((err) => {
       if (err) throw err;
     })
@@ -447,8 +451,12 @@ router.post('/update', imgUpdate, function (req, res, next) {
     (img_banner1 = '', img_banner2 = '', img_banner3 = '')
   }
 
-  Blogs.execute("UPDATE blogs SET title = ?, subtitle = ?,img_header = ?, img_logo = ?, img_banner1 = ?, img_banner2 = ?, img_banner3 = ? \
-    WHERE id = ?", [title, subtitle, img_header, img_logo, img_banner1, img_banner2, img_banner3, id])
+  if(req.body.cardinfo != null){
+    cardinfo = req.body.cardinfo
+  } else cardinfo = ''
+
+  Blogs.execute("UPDATE blogs SET title = ?, subtitle = ?,img_header = ?, img_logo = ?, img_banner1 = ?, img_banner2 = ?, img_banner3 = ?, \
+    cardinfo = ? WHERE id = ?", [title, subtitle, img_header, img_logo, img_banner1, img_banner2, img_banner3, cardinfo, id])
     .then().catch((err) => {
       if (err) throw err;
     })

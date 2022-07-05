@@ -42,7 +42,7 @@
                                 </div>
                             </div>  
                             <div class="form-group py-2 col-4">
-                                <img class="img-raised" src="/assets/img/bg4.jpg" alt="" srcset="">
+                                <img class="img-raised" src="/assets/img/bg4.jpg" alt="" srcset="" >
                                 <div class="form-check mt-4">
                                     <input type="radio" class="form-check-input" name="option" id="radio2" value="option2">
                                     <label  for="radio2">Picture 2</label>
@@ -75,13 +75,15 @@
                         <input type="hidden" name="img_logoPrev" value="<%=db.img_logo%>" class="form-control-file" id="">
                     </div>
                     <div class="col">
-                        <input type="checkbox" name="" id="banners_checkbox" class="form-check-input ml-0" style="margin-top:8px"> 
-                        <p class="ml-4">ใช้ Slide banners</ย><br>
-                        <p class="form-label">Select Slide Banners (กรุณาใส่รูปภาพ 3 ภาพ)</p>
+                        <input type="checkbox" name="" id="banners_checkbox" class="form-check-input check-slideBtn ml-0" style="margin-top:8px"> 
+                        <p class="ml-4">เปิด/ปิด การใช้งาน Slide banners</ย><br>
+                        <p class="form-label not-enb">Select Slide Banners (กรุณาใส่รูปภาพ 3 ภาพ)</p>
                         <input class="form-control-file mb-3 banners" name="img" type="file" accept="image/*" multiple disabled="disabled">
                         <input class="form-control-file mb-3" name="img_banner[]" type="hidden" value="<%= db.img_banner1 %>">
                         <input class="form-control-file mb-3" name="img_banner[]" type="hidden" value="<%= db.img_banner2 %>">
                         <input class="form-control-file mb-3" name="img_banner[]" type="hidden" value="<%= db.img_banner3 %>">
+                        <input type="checkbox" name="cardinfo" id="card-checkbox" class="form-check-input ml-0 mt-2"> 
+                        <p class="ml-4">เปิด/ปิด การใช้งาน Card-Info</ย><br>
                     </div>  
                 </div> 
                 <hr>
@@ -103,7 +105,6 @@
                 <% packages.forEach(function(pk, i){ %>
                 <div id="input_field<%=i%>" class="input_field">
                     <input type="hidden" value="<%= pk.packageNo %>" name="package[<%=i%>][PackageNo]">  
-                    
                     <!-- Modal -->
                     <div id="delete<%= pk.packageNo %>" class="modal fade" tabindex="-1" role="dialog" aria-haspopup="true">
                         <div class="modal-dialog">
@@ -254,6 +255,9 @@
 
     function enable_cb(){
         $('input.banners').prop("disabled", !this.checked);
+        if(this.checked){
+            $('p.form-label').removeClass('not-enb')
+        }else $('p.form-label').addClass('not-enb')
     }
 
     $(document).scroll(()=>{
