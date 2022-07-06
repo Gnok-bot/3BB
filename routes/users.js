@@ -4,13 +4,13 @@ const multer = require('multer');
 const bcrypt = require('bcrypt');
 const cookieSession = require('cookie-session')
 const { body, validationResult } = require('express-validator')
-const router = express.Router();
 const Blogs = require('../models/blogs');
 const app = require('../app');
 const { execute } = require('../models/blogs');
 const fs = require('fs-extra');
 const path = require('path')
 
+const router = express.Router();
 
 //image storages
 const storage = multer.diskStorage({
@@ -349,7 +349,6 @@ router.post('/add', imgUpload, function (req, res, next) {
     if(req.body.cardinfo != null){
       cardinfo = req.body.cardinfo
     } else cardinfo = ''
-    console.log(cardinfo);
   //Banner Img
   req.files['img'] != null ? (
     img_banner1 = req.files['img'][0].filename,
@@ -431,6 +430,7 @@ router.post('/update', imgUpdate, function (req, res, next) {
   }
 
   //Banner Img 
+  
   if (req.files['img'] != null) {
     (
       img_banner1 = req.files['img'][0].filename,
@@ -447,6 +447,14 @@ router.post('/update', imgUpdate, function (req, res, next) {
     }
   } else {
     (img_banner1 = '', img_banner2 = '', img_banner3 = '')
+    if( req.body.img_banner != null){
+      for (i = 0; i <= 2; i++) {
+        const path = './public/images/' + req.session.id + '/banners/' + req.body.img_banner[i]
+        fs.remove(path, (err) => {
+          if (err) throw err;
+        })
+      }
+    }
   }
 
   if(req.body.cardinfo != null){
