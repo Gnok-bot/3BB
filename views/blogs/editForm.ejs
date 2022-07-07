@@ -20,8 +20,7 @@
         </div>
       </div>
     </div>
-    <div class="alert alert-danger alert-dismissible fade" role="alert"
-      style="position: fixed; bottom: 0; right: 10px;">
+    <div class="alert alert-danger alert-dismissible fade" role="alert"style="position: fixed; bottom: 0; right: 10px;">
         แพ็กเกจไม่สามารถเกิน 8 ได้
         <button type="button" class="close" data-dismiss="alert" aria-label="Close">
           <span aria-hidden="true">&times;</span>
@@ -126,45 +125,65 @@
                                 </div>  
                             </div>
                         </div>
+                        
                     </div>
                     <!-- End Modal -->
-                    <div class="row" id="div<%=i+1%>">
-                        <div class="form-group py-2 col">
-                            <p>ชื่อแพ็กเกจ</p> 
-                            <input type="text" name="package[<%=i%>][name]" class="form-control" value="<%=pk.packageName%>" required>
+                    <div class="row package-card container" id="div<%=i+1%>">
+                        <div class="col-md-8">
+                            <div class="row">
+                                <div class="form-group py-2 col-md-8">
+                                    <p>ชื่อแพ็กเกจ</p> 
+                                    <input type="text" name="package[<%=i%>][name]" class="form-control" value="<%=pk.packageName%>" required>
+                                </div>
+                                <div class="form-group py-2 col-md-4">
+                                    <p>ราคาแพ็กเกจ</p> 
+                                    <input type="text" name="package[<%=i%>][price]" class="form-control" value="<%=pk.packagePrice%>" required> 
+                                </div>
+                            </div>
+                            <div class="form-group py-2 mb-2"> 
+                                <p>รายละเอียดแพ็กเกจ</p> 
+                                <input type="text" name="package[<%=i%>][desc]" class="form-control" value="<%=pk.packageDesc%>" required> 
+                            </div> 
                         </div>
-                        <div class="form-group py-2 col">
-                            <p>ราคาแพ็กเกจ</p> 
-                            <input type="text" name="package[<%=i%>][price]" class="form-control" value="<%=pk.packagePrice%>" required> 
+                        <div class="col-md-4 text-center"> 
+                            <p>รูปแพ็กเกจ</p>
+                            <div class="packimg pop">
+                                <img src="/images/<%= pk.id %>/packages/<%= pk.packageImg %>" height="150px" class="mb-2"> 
+                                <div class="pop">
+                                    <a href="#/" class=""><i class="fas fa-magnifying-glass fa-2x"></i></a>
+                                </div>
+                            </div>
+                            <input type="file" name="packageImg<%=pk.packageNo%>" accept='image/*' multiple class="form-control-file text-center" id="packageImg<%=pk.packageNo%>"> 
+                            <input type="hidden" value="<%= pk.packageImg %>" name="package[<%=i%>][packageImgPrev]">    
                         </div> 
+                        <div class="d-flex justify-content-center" style="width: 100%;">
+                            <button type="button" class="btn btn-danger confirm-deleteBtn mt-4 mb-4" id="confirm-deleteBtn" data-target="#delete<%= pk.packageNo %>" data-toggle="modal" style="width: 40%;">ลบแพ็กเกจ</button>
+                        </div>
                     </div> 
-                    <div class="form-group py-2 mb-2"> 
-                        <p>รายละเอียดแพ็กเกจ</p> 
-                        <input type="text" name="package[<%=i%>][desc]" class="form-control" value="<%=pk.packageDesc%>" required> 
-                    </div> 
-                    <div> 
-                        <p>รูปแพ็กเกจ</p>
-                        <img src="/images/<%= pk.id %>/packages/<%= pk.packageImg %>" height="150px" class="mb-2"> 
-                        <input type="file" name="packageImg<%=pk.packageNo%>" accept='image/*' multiple class="form-control-file" id="packageImg<%=pk.packageNo%>"> 
-                    </div>
-                    <input type="hidden" value="<%= pk.packageImg %>" name="package[<%=i%>][packageImgPrev]">    
-                    <button type="button" class="btn btn-danger confirm-deleteBtn" id="confirm-deleteBtn" data-target="#delete<%= pk.packageNo %>" data-toggle="modal" >ลบแพ็กเกจ</button>
-                    <hr>
                 </div>
+                <!-- The Modal -->
+                <div class="modal fade" id="imagemodal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel" aria-hidden="true">
+                    <div class="modal-dialog">
+                      <div class="modal-content">              
+                        <div class="modal-body">
+                            <button type="button" class="close" data-dismiss="modal"><span aria-hidden="true">&times;</span><span class="sr-only">Close</span></button>
+                          <img src="" class="imagepreview" style="width: 100%;" >
+                        </div>
+                      </div>
+                    </div>
+                  </div>
                 <% }) %>
                 <input type="hidden" value="<%= db.id %>" name="id">
                 <input type="hidden" value="<%= db.promoDesc %>" name="promoDescPrev">
                 <input type="hidden" value="<%= db.promoImg %>" name="promoImgPrev">
                 <input type="hidden" value="<%= db.img_header %>" name="img_headerPrev">
                 <% }) %>
-                    <div class="sumbit">
-                        <input type="submit" class="btn btn-primary py-2 mb-3" name="" id="" value="อัพเดท">
-                    </div>
+                <div class="d-flex justify-content-center submit">
+                    <input type="submit" class="btn btn-primary py-2 mb-3" name="" id="" value="อัพเดท">
                 </div>
-                
             </div>
-            
-            </form>
+        </div>
+        </form>
         </div>
     </div>
 </body>  
@@ -200,9 +219,10 @@
                 i++;
                 $(wrapper).append('<div class="input_field" id="input_field">\
                     <input type="hidden" value="'+i+'" name="package['+(i-1)+'][PackageNo]">  \
-                    <div class="row" id="div"><div class="form-group py-2 col"><p>ชื่อแพ็กเกจ</p> \
+                    <div class="row package-card container" id="div"><div class="col-md-8"><div class="row"> \
+                        <div class="form-group py-2 col-md-8"><p>ชื่อแพ็กเกจ</p> \
                         <input type="text" name="package['+(i-1)+'][name]" class="form-control" required></div> \
-                            <div class="form-group py-2 col"> \
+                            <div class="form-group py-2 col-md-4"> \
                         <p>ราคาแพ็กเกจ</p> \
                         <input type="text" name="package['+(i-1)+'][price]" class="form-control" required> \
                     </div> \
@@ -210,13 +230,13 @@
                     <div class="form-group py-2 mb-2"> \
                             <p>รายละเอียดแพ็กเกจ</p> \
                             <input type="text" name="package['+(i-1)+'][desc]" class="form-control" required> \
-                    </div> \
-                    <div> \
+                    </div></div> \
+                    <div class="col-md-4 text-center"> \
                             <p>รูปแพ็กเกจ</p> \
                             <input type="file" name="packageImg'+i+'" accept='+'image/*'+' multiple class="form-control-file" id="packageImg'+i+'"> \
-                    </div> \
-                    <button type="button" class="btn btn-danger removePackages" id="removePackages">ลบแพ็กเกจ</button> \
-                    <hr></div>');
+                    </div> <div class="d-flex justify-content-center" style="width: 100%;"> \
+                    <button type="button" class="btn btn-danger removePackages" id="removePackages" style="width: 40%;">ลบแพ็กเกจ</button> \
+                    </div></div></div></div>');
 
             }else {console.log('out of limit');
             $(".alert").addClass("show")
@@ -270,5 +290,12 @@
             $nav.addClass('navbar-transparent')
         }
     })
+    
+    $(function() {
+		$('.pop').on('click', function() {
+			$('.imagepreview').attr('src', $(this).find('img').attr('src'));
+			$('#imagemodal').modal('show');   
+		});		
+});
 </script>
 </html>

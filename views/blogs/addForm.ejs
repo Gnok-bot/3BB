@@ -134,9 +134,9 @@
             if(i < max_field){
                 i++;
                 $(wrapper).append('<div class="input_field" id="input_field">\
-                    <div class="row" id="div"><div class="form-group py-2 col"><p>ชื่อแพ็กเกจ</p> \
+                    <div class="row  package-card container" id="div"><div class="col-md-8"><div class="row"><div class="form-group py-2 col-md-8"><p>ชื่อแพ็กเกจ</p> \
                         <input type="text" name="packageName[]" class="form-control" required></div> \
-                            <div class="form-group py-2 col"> \
+                            <div class="form-group py-2 col-md-4"> \
                         <p>ราคาแพ็กเกจ</p> \
                         <input type="text" name="packagePrice[]" class="form-control" required> \
                     </div> \
@@ -144,13 +144,13 @@
                     <div class="form-group py-2 mb-2"> \
                             <p>รายละเอียดแพ็กเกจ</p> \
                             <input type="text" name="packageDesc[]" class="form-control" required> \
-                    </div> \
-                    <div> \
+                    </div></div> \
+                    <div class="col-md-4 text-center"> \
                             <p>Package Poster</p> \
                             <input type="file" name="packageImg" accept='+'image/*'+'multiple class="form-control-file" id="" required> \
-                    </div> \
-                    <button type="button" class="btn btn-danger removePackages" id="removePackages">ลบแพ็กเกจ</button> \
-                    <hr></div>');
+                    </div> <div class="d-flex justify-content-center" style="width: 100%;"> \
+                    <button type="button" class="btn btn-danger removePackages" id="removePackages" style="width: 80%;">ลบแพ็กเกจ</button> \
+                    </div></div></div></div>');
             }
             else{
                 $(".alert").addClass("show")
