@@ -14,7 +14,7 @@
         <div class="container">
           <div class="col-md-4 ml-auto mr-auto">
             <div class="card card-login card-plain">
-              <form action="/admin/adduser" method="POST">
+              <form action="/admin/adduser" method="POST" novalidate>
                 <div class="card-header text-center">
                   <div class="logo-container">
                     <img src="/assets/img/3bb-logo.png">
@@ -38,8 +38,8 @@
                     </div>
                     <input type="password" placeholder="รหัสผ่าน" class="form-control" name="password" required/>
                   </div>
-                  <% if (locals.login_error){
-                    login_error.forEach(function(error_msg){ %>
+                  <% if (locals.register_error){
+                    register_error.forEach(function(error_msg){ %>
                     <div class="alert alert-danger rounded" role="alert"><%= error_msg%></div>
                   <%  })
                   } %>

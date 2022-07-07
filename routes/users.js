@@ -153,7 +153,7 @@ router.post('/adduser', ifNotLoggedIn, [
       let allErr = validation_result.errors.map((error) => {
         return error.msg;
       })
-      res.render('login', {
+      res.render('register', {
         register_error: allErr,
         old_data: req.body
       })

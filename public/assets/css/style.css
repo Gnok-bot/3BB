@@ -677,7 +677,7 @@ b{
   top: calc(50% - 12px);
   text-align: center;
   position: absolute;
-  transition: all ease-in-out 0.3s;
+  transition: .3s ease-in-out;
 }
 
 .pop i{
@@ -693,5 +693,5 @@ b{
 
 .packimg:hover{
   opacity: 0.6;
-  transition: all ease-in-out 0.3s;
+  transition: .3s ease-in-out;
 }
