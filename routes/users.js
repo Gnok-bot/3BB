@@ -404,6 +404,7 @@ const imgUpdate = upload.fields([{ name: 'img_logo', maxCount: 1 }, { name: 'pro
 { name: 'packageImg7', maxCount: 1 }, { name: 'packageImg8', maxCount: 1 }, { name: 'img', maxCount: 8 }])
 
 router.post('/update', imgUpdate, function (req, res, next) {
+  // console.log(req.body);
   id = req.session.id
   title = req.body.title,
     subtitle = req.body.subtitle
@@ -430,7 +431,6 @@ router.post('/update', imgUpdate, function (req, res, next) {
   }
 
   //Banner Img 
-  
   if (req.files['img'] != null) {
     (
       img_banner1 = req.files['img'][0].filename,
@@ -440,21 +440,23 @@ router.post('/update', imgUpdate, function (req, res, next) {
     if (req.body.img_banner[0] != '') {
       for (i = 0; i <= 2; i++) {
         const path = './public/images/' + req.session.id + '/banners/' + req.body.img_banner[i]
-        fs.remove(path, (err) => {
+        fs.unlink(path, (err) => {
           if (err) throw err;
         })
       }
     }
+  } else if(req.body.img != 'on'){
+    img_banner1 = req.body.img_banner[0]
+    img_banner2 = req.body.img_banner[1]
+    img_banner3 = req.body.img_banner[2]
   } else {
-    (img_banner1 = '', img_banner2 = '', img_banner3 = '')
-    if( req.body.img_banner != null){
-      for (i = 0; i <= 2; i++) {
-        const path = './public/images/' + req.session.id + '/banners/' + req.body.img_banner[i]
-        fs.remove(path, (err) => {
-          if (err) throw err;
-        })
-      }
+    for (i = 0; i <= 2; i++) {
+      const path = './public/images/' + req.session.id + '/banners/' + req.body.img_banner[i]
+      fs.unlink(path, (err) => {
+        if (err) throw err;
+      })
     }
+    (img_banner1 = '', img_banner2 = '', img_banner3 = '')
   }
 
   if(req.body.cardinfo != null){
@@ -483,8 +485,8 @@ router.post('/update', imgUpdate, function (req, res, next) {
       if (err) throw err;
     })
   //Packages props
-  console.log(req.body);
-  console.log(req.files);
+  // console.log(req.body);
+  // console.log(req.files);
   Blogs.execute("DELETE FROM packages WHERE id = ?", [id])
   const index = req.body.package.length
   for (i = 1; i <= index; i++) {
