@@ -9,7 +9,10 @@
         </div>
         <div class="navbar-translate">
           <a class="navbar-brand" href="/admin/blogs" rel="tooltip">
-            3BB Admin
+            3BB 
+            <% role.forEach(function(blog){ %>
+              <%= blog.role %>
+            <% }) %>  
           </a>
           <button class="navbar-toggler navbar-toggler" type="button" data-toggle="collapse" data-target="#navigation" aria-controls="navigation-index" aria-expanded="false" aria-label="Toggle navigation">
             <span class="navbar-toggler-bar top-bar"></span>
@@ -22,12 +25,53 @@
             <li class="nav-item">
               <a class="nav-link" href="/admin">กลับหน้าหลัก</a>
             </li>
+            
             <li class="nav-item">
               <a class="nav-link" rel="tooltip" title="ข้อมูลผู้ใช้งาน" data-placement="bottom" href="/admin/profile">
-                <i class="fas fa-user-circle fa-xl"></i>
+                <i class="fas fa-user-circle fa-2x" style="padding-top:2px  "></i>
                 <p class="d-lg-none d-xl-none">ข้อมูลผู้ใช้งาน</p>
               </a>
             </li>
+            <li class="nav-item">
+              <a class="nav-link" rel="tooltip" title="ติด Tag Google" data-placement="bottom" href="/admin/googletag">
+                <i class="fab fa-google fa-sm"></i>
+                <p class="d-lg-none d-xl">ติด Tag Google</p>
+              </a> 
+            </li>
+            <% role.forEach(function(blog){ %>
+              <% if(blog.role == 'admin'){ %> 
+                <li class="nav-item">
+                  <a class="nav-link" rel="tooltip" title="ข้อมูลใช้งานส่วนของ sale" data-placement="bottom" href="#">
+                    <i class="fa-solid fa-address-card fa-2x"></i>
+                    <p class="d-lg-none d-xl">ข้อมูลใช้งานส่วนของ sale</p>
+                  </a> 
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" rel="tooltip" title="การจัดการ user" data-placement="bottom" href="#">
+                    <i class="fa-solid fa-users-gear fa-2x"></i>
+                    <p class="d-lg-none d-xl">Admin Dashboard</p>
+                  </a> 
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" rel="tooltip" title="System Log" data-placement="bottom" href="#">
+                    <i class="fa-solid fa-calendar-check fa-2x"></i>
+                    <p class="d-lg-none d-xl">System Log</p>
+                  </a> 
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" rel="tooltip" title="รายงาน" data-placement="bottom" href="#">
+                    <i class="fa-solid fa-file-lines fa-2x"></i>
+                    <p class="d-lg-none d-xl">รายงาน</p>
+                  </a> 
+                </li>
+                <li class="nav-item">
+                  <a class="nav-link" rel="tooltip" title="เพิ่มรหัสพนักงาน" data-placement="bottom" href="/admin/adduser">
+                    <i class="fa-solid fa-user-plus fa-2x"></i>
+                    <p class="d-lg-none d-xl">เพิ่มรหัสพนักงาน</p>
+                  </a> 
+                </li>
+              <% } %> 
+            <% }) %>   
             <li class="nav-item">
               <a class="nav-link" rel="tooltip" title="ออกจากระบบ" data-placement="bottom" href="/admin/logout">
                 <i class="fas fa-arrow-right-from-bracket fa-xl"></i>

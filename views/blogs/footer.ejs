@@ -7,28 +7,24 @@
           <!-- Grid row -->
           <div class="row mt-3">
             <!-- Grid column -->
-            <div class="col-md-3 col-lg-3 col-xl-3 mb-4 mt-3">
+            <div class="col-md-3 col-lg-3 col-xl-3 mb-1 mt-3">
               <!-- Content -->
-              <h5 class="text-uppercase fw-bold mb-4">
+              <h5 class="text-uppercase fw-bold">
                 <% blogs.forEach(function(blog){ %>
                 <p style="font-weight: bold ;">ADDRESS :</ps>
               </h5>
-              <p>บริษัท ทริปเปิลที อินเทอร์เน็ต จำกัด</p>
-              <p><b>พื้นที่ :</b> <%= blog.area %></p>
-              <p><b>จังหวัด :</b> <%= blog.province %></p>
-              <p><b>ที่อยู่ :</b> <%= blog.address %></p>
-              <div class="telNum" id="telNum">                
-              <h5 class="fw-bold mb-2">เบอร์ติตต่อ :</h5>
-              </div>
+              <p class="mb-2">บริษัท ทริปเปิลที อินเทอร์เน็ต จำกัด</p>
+              <p class="mb-2"><b>พื้นที่ :</b> <%= blog.area %></p>
+              <p class="mb-2"><b>จังหวัด :</b> <%= blog.province %></p>
+              <p class="mb-2"><b>ที่อยู่ :</b> <%= blog.address %></p>
+              
             </div>
             <!-- Grid column -->
             <div class="col-md-3 col-lg-2 col-xl-2 mx-auto mb-4 mt-3">
               <h5 class="text-uppercase fw-bold mb-4">
-                <p style="font-weight: bold ;">e-mail :</ps>
+                <p style="font-weight: bold ;">เบอร์ติดต่อ :</ps>
               </h5>
-              <p>
-                  <a href="mailto:<%= blog.email %>"><%= blog.email %></a>
-              </p>
+              <div class="telNum" id="telNum"></div>
             </div>
             <!-- Grid column -->
             <div class="social-icons col-md-3 col-lg-2 col-xl-2 mx-auto mb-4 mt-3">
@@ -36,8 +32,10 @@
                 <p style="font-weight: bold ;">social media :</ps>
               </h5>
               <p>
-                <a href="https://<%= blog.line_url %>" class="social-icons"><i class="fab fa-line fa-3x"></i></a>
-                <a href="https://th-th.facebook.com/3BBOfficialPage/" class="social-icons"><i class="fab fa-facebook fa-3x mr-3"></i></a>
+                <a href="<%= blog.line_url %>" class="social-icons"><i class="fab fa-line fa-3x"></i></a>
+                <% if(blog.fb_url){ %> 
+                  <a href="<%= blog.fb_url %>" class="social-icons"><i class="fab fa-facebook fa-3x mr-3"></i></a>
+                <% } %> 
               </p>
             </div>
             <!-- Grid column -->
@@ -45,7 +43,7 @@
               <h5 class="text-uppercase fw-bold mb-4">
                 <p style="font-weight: bold ;">ติดต่อ/สอบถาม :</ps>
               </h5>
-              <a href="//<%= blog.line_url %>"><img class="d-block" src="/images/<%= blog.id %>/qrcode/<%= blog.line_qrcode %>" alt="Line QRCODE" height="150px"></a>
+              <a href="<%= blog.line_url %>"><img class="d-block" src="/images/<%= blog.id %>/qrcode/<%= blog.line_qrcode %>" alt="Line QRCODE" height="150px"></a>
               <% }) %>
           </div>
         </div>
@@ -79,7 +77,7 @@
       $1 = $telNumber.substr(0,3);
       $2 = $telNumber.substr(3,3);
       $3 = $telNumber.substr(6,4);
-      $text = '<p><b>เบอร์มือถือ : </b><a href="tel:'+$telNumber+'">'+$1+'-'+$2+'-'+$3+'</a></p>'
+      $text = '<p><a href="tel:'+$telNumber+'">'+$1+'-'+$2+'-'+$3+'</a></p>'
       $('#telNum').html($text);
     })
   </script>

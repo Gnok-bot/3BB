@@ -76,6 +76,10 @@
                         <label for="">Line URL</label>
                         <p name="line_url" class="form-control" ><%= blog.line_url%></p>
                     </div>
+                    <div class="form-group py-2 col">
+                      <label for="">Facebook URL</label>
+                      <p name="fb_url" class="form-control" ><%= blog.fb_url%></p>
+                    </div>
                     <input type="hidden" name="id">
                   </div>
                   <div class="tab-content row">
@@ -84,7 +88,7 @@
                       <img class="d-block img-raised" src="/images/<%= blog.id %>/qrcode/<%= blog.line_qrcode %>" alt="Line QRCODE" height="150px">
                     </div>
                     <div style="margin: 140px 20px 0 0;">
-                      <a href="/admin/profile/edit?:<%= blog.id %>"><button class="btn btn-primary">แก้ไข</button></a>
+                      <a href="/admin/profile/edit?:<%= blog.id %>">  แก้ไข</button></a>
                     </div>
                   </div>
                   <% }) %>

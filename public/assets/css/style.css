@@ -1,5 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=Kanit&display=swap');
 
+*{
+  font-family: 'Kanit', sans-serif;
+}
+
 footer {
   font-size: 13px;
 }
@@ -694,4 +698,46 @@ b{
 .packimg:hover{
   opacity: 0.6;
   transition: .3s ease-in-out;
+}
+
+.addPackagebtn {
+  position: fixed;
+  left: 2.1875rem;
+  bottom: 1.1875rem;
+  z-index: 1000;
+}
+
+.btn-circle {
+  width: 40px;
+  height: 40px;
+  padding: 6px 0px;
+  border-radius: 20px;
+  text-align: center;
+  font-size: 12px;
+  line-height: 1.42857;
+  transition: .5s ease;
+}
+
+.btn-circle:hover{
+  width: 80px;
+}
+
+.pk-raised{
+  box-shadow: 5px 5px 25px 0px rgb(0 0 0 / 30%);
+}
+
+.btn-login {
+  font-family: 'Kanit';
+}
+
+input::placeholder{
+  font-family: 'Kanit';
+}
+
+.card-header .card-title{
+  margin-top: -15px;
+}
+
+textarea{
+  font-family: 'Kanit';
 }

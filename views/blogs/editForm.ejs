@@ -96,11 +96,13 @@
                     <input type="file" name="promotionImg" accept='image/*' class="form-control-file" id="">
                 </div>
                 <hr>
-                <div class="button">
-                    <button type="button" class="btn btn-success addPackages " id="addPackages">เพิ่มแพ็กเกจ</button>
-                    <hr>
+                <div class="addPackagebtn">
+                    <a href="#submit"><button type="button" class="btn btn-success btn-circle btn-lg addPackages" id="addPackages">
+                        <span><i class="fas fa-plus"></i></span>
+                        </button>
+                    </a>
                 </div>
-                <div id="dynamic_field" class="dynamic_field"></div>
+                
                 <% packages.forEach(function(pk, i){ %>
                 <div id="input_field<%=i%>" class="input_field">
                     <input type="hidden" value="<%= pk.packageNo %>" name="package[<%=i%>][PackageNo]">  
@@ -125,7 +127,6 @@
                                 </div>  
                             </div>
                         </div>
-                        
                     </div>
                     <!-- End Modal -->
                     <div class="row package-card container" id="div<%=i+1%>">
@@ -173,12 +174,13 @@
                     </div>
                   </div>
                 <% }) %>
+                <div id="dynamic_field" class="dynamic_field"></div>
                 <input type="hidden" value="<%= db.id %>" name="id">
                 <input type="hidden" value="<%= db.promoDesc %>" name="promoDescPrev">
                 <input type="hidden" value="<%= db.promoImg %>" name="promoImgPrev">
                 <input type="hidden" value="<%= db.img_header %>" name="img_headerPrev">
                 <% }) %>
-                <div class="d-flex justify-content-center submit">
+                <div class="d-flex justify-content-center submit" id="submit">
                     <input type="submit" class="btn btn-primary py-2 mb-3" name="" id="" value="อัพเดท">
                 </div>
             </div>

@@ -12,31 +12,29 @@
       <div class="page-header-image" style="background-image:url(/assets/img/login.jpg)"></div>
       <div class="content">
         <div class="container">
-          <div class="col-md-4 ml-auto mr-auto">
+          <div class="col-md-6 ml-auto mr-auto">
             <div class="card card-login card-plain">
-              <form class="form" action="/admin/login" method="POST" novalidate>
+              <form class="form" action="/admin/reset-password" method="POST" novalidate>
                 <div class="card-header text-center">
                   <div class="logo-container">
                     <img src="/assets/img/3bb-logo.png">
-                    <p>ลงชื่อผู้ใช้งาน</p>
+                  </div>
+                  <div class="card-title pb-0">
+                    <p>รีเซ็ตรหัสเข้าใช้งานใหม่</p>
+                  </div>
+                  <div class="card-subtitle text-left" style="font-size: 14px ;">
+                    <label>กรุณากรอกอีเมล์ผู้ใช้งานเพื่อทำการยืนยันการรีเซ็ตรหัสผ่านใหม่ทางอีเมล</label>
                   </div>
                 </div>
-                <div class="card-body">
+                
+                <div class="card-body pb-0">
                   <div class="input-group no-border input-lg">
                     <div class="input-group-prepend">
                       <span class="input-group-text">
                         <i class="now-ui-icons users_circle-08"></i>
                       </span>
                     </div>
-                    <input type="text" class="form-control" placeholder="ชื่อผู้ใช้งาน" name="username" required>
-                  </div>
-                  <div class="input-group no-border input-lg mb-0">
-                    <div class="input-group-prepend">
-                      <span class="input-group-text">
-                        <i class="now-ui-icons objects_key-25"></i>
-                      </span>
-                    </div>
-                    <input type="password" placeholder="รหัสผ่าน" class="form-control" name="password" required/>
+                    <input type="text" class="form-control" placeholder="อีเมล์ผู้ใช้งาน" name="email" required>
                   </div>
                   <% if (locals.login_errors){
                     login_errors.forEach(function(error_msg){ %>
@@ -44,11 +42,8 @@
                   <%  })
                   } %>
                 </div>
-                <div class="forgot">
-                  <a href="admin/forgot" class="right">ลืมรหัสผ่าน ?</a>
-                </div>
                 <div class="card-footer text-center">
-                <button type="submit" class="btn btn-primary btn-round btn-lg btn-block btn-login">เข้าสู่ระบบ</button>
+                <button type="submit" class="btn btn-primary btn-round btn-lg btn-block btn-login">ยืนยัน</button>
               </form>
               </div>
             </div>

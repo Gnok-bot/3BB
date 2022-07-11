@@ -9,6 +9,10 @@ const app = require('../app');
 const { execute } = require('../models/blogs');
 const fs = require('fs-extra');
 const path = require('path')
+const nodemailer = require('nodemailer')
+const randtoken = require('rand-token')
+const dotenv = require('dotenv')
+dotenv.config()
 
 const router = express.Router();
 
@@ -103,6 +107,18 @@ const ifLoggedIn = (req, res, next) => {
   next();
 }
 
+const ifNotAdmin = (req,res,next) => {
+  const id = req.session.id
+  Blogs.execute('SELECT role FROM users WHERE id = ?',[id]).then((result)=>{
+    console.log(result[0][0].role);
+    if( result[0][0].role != 'admin'){
+    return res.redirect('/admin')
+  }
+  next();
+  })
+}
+
+
 /* GET users listing. */
 router.get('/', ifNotLoggedIn, function (req, res, next) {
   Blogs.execute("SELECT username FROM users WHERE id = ?", [req.session.id])
@@ -110,7 +126,7 @@ router.get('/', ifNotLoggedIn, function (req, res, next) {
       res.redirect('/admin/blogs')
     })
 });
-router.get('/adduser', ifNotLoggedIn, (req, res) => {
+router.get('/adduser', ifNotAdmin,(req, res) => {
   res.render('register')
 })
 
@@ -207,6 +223,78 @@ router.post('/login', ifLoggedIn, [
   }
 ])
 
+router.get('/forgot', (req,res)=>{
+  res.render('forgot')
+})
+
+//send email
+function sendEmail(email, token) {
+ 
+  var email = email;
+  var token = token;
+
+var transporter = nodemailer.createTransport({
+  host: "smtp.ethereal.email",
+  port: 587,
+  secure: false, // true for 465, false for other ports
+  auth: { user: "gnoktester@gmail.com", 
+          pass: "ochuewascdsojvne" }, 
+  });
+
+  var mailOptions = {
+      from: 'gnoktester@outlook.com',
+      to: 'gnoktester@gmail.com',
+      subject: 'Reset Password Link',
+      html: '<p>You requested for reset password, kindly use this <a href="http://localhost:3000/reset-password?token=' + token + '">link</a> to reset your password</p>'
+
+  };
+  transporter.sendMail(mailOptions, function (err, info) {
+    if(err)
+      console.log(err)
+    else
+      console.log(info);
+ });
+}
+
+// send reset password link in email
+router.post('/reset-password', (req,res)=>{
+  var email = req.body.email
+  Blogs.execute('SELECT * FROM usersinfo WHERE email= ?',[email]).then((result,err)=>{
+    if(err) throw err;
+    // console.log(result[0][0]);
+    // console.log(result[0][0].email);
+    if(typeof result[0][0] != 'undefined'){
+      if(result[0][0].email.length > 0){
+        var token = randtoken.generate(20);
+        var sent = sendEmail(email, token);
+        if(sent != '0'){
+          Blogs.execute('SELECT id FROM usersinfo WHERE email = ?',[email]).then(
+            (result)=>{
+              console.log(result[0][0].id);
+              id = result[0][0].id;
+              Blogs.execute('UPDATE users SET token = ? WHERE id = ?', [token,id]).then()
+              .catch((err)=>{
+                if (err) throw err;
+              })
+            }
+          )
+          .catch((err)=>{
+            if (err) throw err;
+          })
+          console.log('success') 
+        } else {
+          console.log('error something wrong') 
+        }
+      } else {'error something wrong'}
+    }else {
+      console.log('The Email is not registered with us') 
+    }
+    // res.redirect('/forgot');
+  }).catch((err)=>{
+    if (err) throw err;
+  })
+})
+
 //logout
 router.get('/logout', (req, res) => {
   req.session = null
@@ -228,7 +316,10 @@ router.get('/blogs', ifNotLoggedIn, function (req, res, next) {
         promoResult = result[0]
         Blogs.execute("SELECT * FROM packages p WHERE p.id = ?", [id]).then((result) => {
           packResult = result[0]
-          res.render("blogs/index", { data: "3BB ระบบหลังบ้าน", bg: bg, blogs: blogResult, promo: promoResult, packages: packResult, isLoggedIn: "admin" });
+          Blogs.execute("SELECT role FROM users WHERE id = ?",[id]).then((result)=>{
+            role = result[0]
+            res.render("blogs/index", { data: "3BB ระบบหลังบ้าน", bg: bg, blogs: blogResult, promo: promoResult, packages: packResult, role:role, isLoggedIn: "admin" });
+          })
         })
       })
       // 
@@ -249,6 +340,30 @@ router.get('/profile', ifNotLoggedIn, function (req, res, next) {
 
 });
 
+router.get('/googletag', ifNotLoggedIn, function (req, res, next) {
+  const id = req.session.id  
+  Blogs.execute('SELECT * FROM google_tag WHERE id = ?',[id]).then((results)=>{
+    res.render("blogs/googletag", {results: results[0]});
+  }).catch((err)=>{if (err) throw err})
+});
+
+router.get('/add-googletag', ifNotLoggedIn, function (req, res, next) {
+  res.render("blogs/addGoogletag");
+});
+
+router.post('/add-googletag', ifNotLoggedIn, (req, res) =>{
+  const id = req.session.id
+  const google_manager = req.body.google_manager
+  const google_analytic = req.body.google_analytic
+  const google_verification = req.body.google_verification
+
+  Blogs.execute('DELETE FROM google_tag WHERE id = ?',[id]).then(
+    Blogs.execute('INSERT INTO google_tag (id,google_manager,google_analytic,google_verification) VALUE (?,?,?,?)',[id,google_manager,google_analytic,google_verification])
+    .then(res.redirect("/admin/googletag"))
+    .catch((err)=>{ if (err) throw err})
+  ).catch((err)=>{ if (err) throw err})
+})
+
 router.get('/profile/add/', ifNotLoggedIn, function (req, res, next) {
   res.render("blogs/addProfile");
 });
@@ -261,9 +376,9 @@ router.get('/add', ifNotLoggedIn, function (req, res, next) {
 router.post('/profileadd', upload.single('line_qrcode'), (req, res, next) => {
   const id = req.session.id
   const line_qrcode = req.file.filename
-  const { emp_id, firstName, lastName, email, telNum, line_url, area, province, address } = req.body
-  Blogs.execute("INSERT INTO usersinfo (id,emp_id,firstName,lastName,email,telNum,line_url,line_qrcode,area,province,address) \
-  VALUES (?,?,?,?,?,?,?,?,?,?,?)", [id, emp_id, firstName, lastName, email, telNum, line_url, line_qrcode, area, province, address])
+  const { emp_id, firstName, lastName, email, telNum, line_url, fb_url, area, province, address } = req.body
+  Blogs.execute("INSERT INTO usersinfo (id,emp_id,firstName,lastName,email,telNum,line_url,line_qrcode,fb_url,area,province,address) \
+  VALUES (?,?,?,?,?,?,?,?,?,?,?,?)", [id, emp_id, firstName, lastName, email, telNum, line_url, line_qrcode, fb_url, area, province, address])
     .then(
       res.redirect('/admin/profile'))
     .catch((err) => {
@@ -285,7 +400,7 @@ router.get('/profile/edit?:id', ifNotLoggedIn, function (req, res, next) {
 
 router.post('/profile/update', upload.single('line_qrcode'), (req, res, next) => {
   const id = req.session.id
-  const { emp_id, firstName, lastName, email, telNum, line_url, area, province, address } = req.body
+  const { emp_id, firstName, lastName, email, telNum, line_url, fb_url, area, province, address } = req.body
   if (req.file != null) {
     line_qrcode = req.file.filename
     const path = './public/images/' + req.session.id + '/qrcode/' + req.body.line_qrcodePrev
@@ -295,8 +410,8 @@ router.post('/profile/update', upload.single('line_qrcode'), (req, res, next) =>
   } else {
     line_qrcode = req.body.line_qrcodePrev
   }
-  Blogs.execute("UPDATE usersinfo SET emp_id = ?, firstName = ?, lastName = ?, email = ?, telNum = ?, line_url = ?, line_qrcode = ?, area = ?, province = ?, address = ? \
-    WHERE id = ?", [emp_id, firstName, lastName, email, telNum, line_url, line_qrcode, area, province, address, id])
+  Blogs.execute("UPDATE usersinfo SET emp_id = ?, firstName = ?, lastName = ?, email = ?, telNum = ?, line_url = ?, line_qrcode = ?, fb_url = ?, area = ?, province = ?, address = ? \
+    WHERE id = ?", [emp_id, firstName, lastName, email, telNum, line_url, line_qrcode, fb_url, area, province, address, id])
     .then(
       res.redirect('/admin/profile')
     ).catch((err) => {
@@ -541,7 +656,13 @@ router.get('/footer', ifNotLoggedIn, function (req, res, next) {
     }).catch((err) => {
       if (err) throw err;
     })
-
 });
+
+router.get('/navbar', ifNotLoggedIn, (req,res)=>{
+  const id = req.session.id
+  Blogs.execute('SELECT role FROM users WHERE id=?',[id]).then((result)=>{
+    res.render("navbar",{role :result[0]})
+  }).catch((err)=>{if (err) throw err})
+})
 
 module.exports = router;
