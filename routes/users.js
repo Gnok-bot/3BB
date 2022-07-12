@@ -77,7 +77,6 @@ const storage = multer.diskStorage({
     } else if (file.fieldname === "packageImg8") {
       cb(null, Date.now() + ".jpg")
     }
-
   }
 })
 
@@ -110,14 +109,13 @@ const ifLoggedIn = (req, res, next) => {
 const ifNotAdmin = (req,res,next) => {
   const id = req.session.id
   Blogs.execute('SELECT role FROM users WHERE id = ?',[id]).then((result)=>{
-    console.log(result[0][0].role);
-    if( result[0][0].role != 'admin'){
+    // console.log(result[0][0].role);
+    if( result[0][0].role != 'Admin'){
     return res.redirect('/admin')
   }
   next();
   })
 }
-
 
 /* GET users listing. */
 router.get('/', ifNotLoggedIn, function (req, res, next) {
@@ -144,13 +142,12 @@ router.post('/adduser', ifNotLoggedIn, [
 ],
   (req, res, next) => {
     const validation_result = validationResult(req);
-    const { username, password } = req.body
-
+    const { username, password, role } = req.body
     if (validation_result.isEmpty()) {
       bcrypt.hash(password, 12).then((hash_pass) => {
-        Blogs.execute("INSERT INTO users (username,password) VALUES (?,?)", [username, hash_pass])
+        Blogs.execute("INSERT INTO users (username,password,role) VALUES (?,?,?)", [username, hash_pass, role])
           .then(result => {
-            res.send(`สร้างบัญชีเรียบร้อยแล้ว <a href="/admin/blogs">Home</a>`)
+            res.render('succeed')
             Blogs.execute("SELECT id FROM users WHERE username = ?",[username])
             .then((result)=>{
               fs.ensureDir('./public/images/' + result[0][0].id + '/banners', err => {console.log(err)})
@@ -169,13 +166,24 @@ router.post('/adduser', ifNotLoggedIn, [
       let allErr = validation_result.errors.map((error) => {
         return error.msg;
       })
-      res.render('register', {
-        register_error: allErr,
-        old_data: req.body
-      })
+      const id = req.session.id
+      Blogs.execute('SELECT * FROM users').then((results)=>{
+        results = results[0]
+        Blogs.execute('SELECT role FROM users WHERE id = ?',[id]).then((result)=>{
+          res.render("blogs/userconfig",{role: result[0], 
+            results: results,
+            register_error: allErr,
+            old_data: req.body
+          });
+        }).catch((err)=>{if (err) throw err})
+      }).catch((err)=>{if (err) throw err})
     }
   }
 )
+
+router.get('/succeed', (req,res)=>{
+  res.render('succeed')
+})
 
 //login page
 router.post('/login', ifLoggedIn, [
@@ -192,15 +200,18 @@ router.post('/login', ifLoggedIn, [
   (req, res) => {
     const validation_result = validationResult(req)
     const { username, password } = req.body
-    // console.log(validation_result);
     if (validation_result.isEmpty()) {
       Blogs.execute("SELECT * FROM users WHERE username = ?", [username])
         .then(([rows]) => {
-          bcrypt.compare(password, rows[0].password).then(compare_result => {
+            bcrypt.compare(password, rows[0].password).then(compare_result => {
             if (compare_result == true) {
               req.session.isLoggedIn = true;
               req.session.id = rows[0].id;
-              res.redirect('/admin/blogs');
+              const action = 'Log in'
+              var ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress
+              Blogs.execute('INSERT INTO logs (ip_address,username,action) VALUES (?,?,?)',[ip,username,action]).then(
+                res.redirect('/admin/blogs')
+              ).catch((err)=>{if (err) throw err})
             } else {
               res.render('login', {
                 login_errors: ['รหัสผ่านไม่ถูกต้อง']
@@ -261,8 +272,6 @@ router.post('/reset-password', (req,res)=>{
   var email = req.body.email
   Blogs.execute('SELECT * FROM usersinfo WHERE email= ?',[email]).then((result,err)=>{
     if(err) throw err;
-    // console.log(result[0][0]);
-    // console.log(result[0][0].email);
     if(typeof result[0][0] != 'undefined'){
       if(result[0][0].email.length > 0){
         var token = randtoken.generate(20);
@@ -301,6 +310,28 @@ router.get('/logout', (req, res) => {
   res.redirect('/')
 })
 
+// System Log
+router.get('/log', ifNotLoggedIn, ifNotAdmin, (req, res, next) => {
+  const id = req.session.id
+  Blogs.execute('SELECT * FROM logs').then((results)=>{
+    results = results[0]
+    Blogs.execute('SELECT role FROM users WHERE id = ?',[id]).then((result)=>{
+      res.render("blogs/log",{role: result[0], results: results});
+    }).catch((err)=>{if (err) throw err})
+  }).catch((err)=>{if (err) throw err})
+})
+
+// User Config
+router.get('/user-config', ifNotLoggedIn, ifNotAdmin, (req, res, next) => {
+  const id = req.session.id
+  Blogs.execute('SELECT * FROM users').then((results)=>{
+    results = results[0]
+    Blogs.execute('SELECT role FROM users WHERE id = ?',[id]).then((result)=>{
+      res.render("blogs/userconfig",{role: result[0], results: results});
+    }).catch((err)=>{if (err) throw err})
+  }).catch((err)=>{if (err) throw err})
+})
+
 // Blog page
 router.get('/blogs', ifNotLoggedIn, function (req, res, next) {
   const id = req.session.id
@@ -328,27 +359,21 @@ router.get('/blogs', ifNotLoggedIn, function (req, res, next) {
     })
 });
 
-//profile page
-router.get('/profile', ifNotLoggedIn, function (req, res, next) {
-  const id = req.session.id
-  Blogs.execute('SELECT * FROM usersinfo WHERE id=? LIMIT 1', [id])
-    .then((blog) => {
-      res.render("blogs/profile", { blogs: blog[0] });
-    }).catch((err) => {
-      if (err) throw err;
-    })
-
-});
-
 router.get('/googletag', ifNotLoggedIn, function (req, res, next) {
   const id = req.session.id  
   Blogs.execute('SELECT * FROM google_tag WHERE id = ?',[id]).then((results)=>{
-    res.render("blogs/googletag", {results: results[0]});
+    results = results[0]
+    Blogs.execute('SELECT role FROM users WHERE id = ?',[id]).then((result)=>{
+      res.render("blogs/googletag",{role: result[0], results: results});
+    }).catch((err)=>{if (err) throw err})
   }).catch((err)=>{if (err) throw err})
 });
 
 router.get('/add-googletag', ifNotLoggedIn, function (req, res, next) {
-  res.render("blogs/addGoogletag");
+  const id = req.session.id
+  Blogs.execute('SELECT role FROM users WHERE id = ?',[id]).then((result)=>{
+    res.render("blogs/addGoogletag",{role:result[0]});
+  }).catch((err)=>{if (err) throw err})
 });
 
 router.post('/add-googletag', ifNotLoggedIn, (req, res) =>{
@@ -364,23 +389,43 @@ router.post('/add-googletag', ifNotLoggedIn, (req, res) =>{
   ).catch((err)=>{ if (err) throw err})
 })
 
-router.get('/profile/add/', ifNotLoggedIn, function (req, res, next) {
-  res.render("blogs/addProfile");
-});
-
 router.get('/add', ifNotLoggedIn, function (req, res, next) {
   res.render("blogs/addForm", { data: "3BB เพิ่มข้อมูล" });
+});
+
+//profile page
+router.get('/profile', ifNotLoggedIn, function (req, res, next) {
+  const id = req.session.id
+  Blogs.execute('SELECT * FROM usersinfo WHERE id=? LIMIT 1', [id])
+    .then((blog) => {
+      blogResult = blog[0]
+      Blogs.execute('SELECT role FROM users WHERE id = ?',[id]).then((result)=>{
+        res.render("blogs/profile",{role:result[0], blogs:blogResult});
+      }).catch((err)=>{ if (err) throw err })
+    }).catch((err) => { if (err) throw err; })
+
+});
+
+router.get('/profile/add/', ifNotLoggedIn, function (req, res, next) {
+  const id = req.session.id
+  Blogs.execute('SELECT role FROM users WHERE id = ?',[id]).then((result)=>{
+    res.render("blogs/addProfile",{role:result[0]});
+  }).catch((err)=>{if (err) throw err})
 });
 
 // ADD Profile INFO 
 router.post('/profileadd', upload.single('line_qrcode'), (req, res, next) => {
   const id = req.session.id
-  const line_qrcode = req.file.filename
+  const line_qrcode = (req.file != null) ? req.file.filename : ''
   const { emp_id, firstName, lastName, email, telNum, line_url, fb_url, area, province, address } = req.body
   Blogs.execute("INSERT INTO usersinfo (id,emp_id,firstName,lastName,email,telNum,line_url,line_qrcode,fb_url,area,province,address) \
   VALUES (?,?,?,?,?,?,?,?,?,?,?,?)", [id, emp_id, firstName, lastName, email, telNum, line_url, line_qrcode, fb_url, area, province, address])
     .then(
-      res.redirect('/admin/profile'))
+      Blogs.execute("UPDATE users SET firstName = ?, lastName = ? WHERE id= ?",[firstName,lastName,id]).then(
+        res.redirect('/admin/profile'))
+      ).catch((err)=>{
+        if (err) throw err;
+      })
     .catch((err) => {
       if (err) throw err;
     })
@@ -391,11 +436,11 @@ router.get('/profile/edit?:id', ifNotLoggedIn, function (req, res, next) {
   const id = req.session.id
   Blogs.execute('SELECT * FROM usersinfo WHERE id=? ', [id])
     .then((blog) => {
-      res.render("blogs/editProfile", { blogs: blog[0] });
-    }).catch((err) => {
-      if (err) throw err;
-    })
-
+      blogResult = blog[0]
+      Blogs.execute('SELECT role FROM users WHERE id = ?',[id]).then((result)=>{
+        res.render("blogs/editProfile",{role: result[0], blogs: blogResult});
+      }).catch((err)=>{ if (err) throw err })
+    }).catch((err) => { if (err) throw err })
 });
 
 router.post('/profile/update', upload.single('line_qrcode'), (req, res, next) => {
@@ -413,7 +458,11 @@ router.post('/profile/update', upload.single('line_qrcode'), (req, res, next) =>
   Blogs.execute("UPDATE usersinfo SET emp_id = ?, firstName = ?, lastName = ?, email = ?, telNum = ?, line_url = ?, line_qrcode = ?, fb_url = ?, area = ?, province = ?, address = ? \
     WHERE id = ?", [emp_id, firstName, lastName, email, telNum, line_url, line_qrcode, fb_url, area, province, address, id])
     .then(
-      res.redirect('/admin/profile')
+      Blogs.execute("UPDATE users SET firstName = ?, lastName = ? WHERE id= ?",[firstName,lastName,id]).then(
+        res.redirect('/admin/profile')
+      ).catch((err) => {
+        if (err) throw err;
+      })
     ).catch((err) => {
       if (err) throw err;
     })

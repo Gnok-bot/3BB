@@ -1,0 +1,36 @@
+<html>
+    <head>
+        <link rel="stylesheet" href="/assets/css/style.css">
+        <title>Succeed</title>
+    </head>
+    <body>
+      <div class="card-succeed">
+      <div style="border-radius:200px; height:200px; width:200px; background: #F8FAF5; margin:0 auto;">
+        <i class="checkmark">✓</i>
+      </div>
+        <h1>สร้างบัญชีเสร็จสิ้น</h1> 
+        <p>ระบบจะนำคุณกลับไปหน้า Dashboard ในไม่ช้า ...</p>
+        <div class="spinner" style="width: 80px; height:80px; padding-left:140px;" >
+            <svg viewBox="0 0 100 100">
+              <circle cx="50" cy="50" r="20" />
+            </svg>
+        </div>
+      </div>
+      
+    </body>
+    <% include('script') %> 
+    
+<script type="text/javascript">
+    setTimeout(function() {
+        window.location.href = "/admin/user-config";
+      }, 2000);
+</script>
+</html>
+
+<style>
+    body {
+      text-align: center;
+      padding: 40px 0;
+      background: #EBF0F5;
+    }
+  </style>

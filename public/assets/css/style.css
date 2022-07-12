@@ -621,6 +621,7 @@ b{
   }
 }
 
+
 .card-info {
   transition: .5s ease;
   color: rgb(93, 93, 93);
@@ -740,4 +741,110 @@ input::placeholder{
 
 textarea{
   font-family: 'Kanit';
+}
+
+.card-table{
+    display: -ms-flexbox;
+    /* display: flex; */
+    -ms-flex-direction: column;
+    flex-direction: column;
+    min-width: 0;
+    word-wrap: break-word;
+    background-color: #fff;
+    background-clip: border-box;
+    border: 1px solid rgba(0,0,0,.125);
+    border-radius: 0.25rem;
+}
+
+.table-scroll{
+  height:500px;
+  overflow:auto;  
+}
+
+.card-succeed {
+  background: white;
+  padding: 60px;
+  border-radius: 4px;
+  box-shadow: 0 2px 3px #C8D0D8;
+  display: inline-block;
+  margin: 0 auto;
+}
+
+.card-succeed i{
+  color: #9ABC66;
+  font-size: 100px;
+  line-height: 200px;
+  margin-left:-15px;
+}
+
+.card-succeed p {
+  font-family: 'Kanit';
+  color: #404F5E;
+  font-size:20px;
+  margin: 0;
+}
+
+.card-succeed  h1{
+    font-family: 'Kanit';
+    color: #88B04B;
+    font-weight: 900;
+    font-size: 40px;
+    margin-bottom: 10px;
+}
+
+.spinner {
+  width: 200px;
+  height: 200px;
+}
+
+.spinner svg {
+  animation: rotate 1.5s linear infinite;
+  height: 100%;
+  width: 100%;
+}
+
+.spinner circle {
+  stroke-dasharray: 1,200;
+  stroke-dashoffset: 0;
+  animation: 
+    dash 1.5s ease-in-out infinite 0s, 
+    color 6s ease-in-out infinite -0.75s;
+  stroke-linecap: round;
+  fill: none;
+  stroke-width:3;
+}
+
+@keyframes rotate {
+  100% {
+    -webkit-transform: rotate(360deg);
+            transform: rotate(360deg);
+  }
+}
+@keyframes dash {
+  0% {
+    stroke-dasharray: 1,200;
+    stroke-dashoffset: 0;
+  }
+  50% {
+    stroke-dasharray: 89,200;
+    stroke-dashoffset: -35;
+  }
+  100% {
+    stroke-dasharray: 89,200;
+    stroke-dashoffset: -124;
+  }
+}
+@keyframes color {
+  100%, 0% {
+    stroke: #4285F4;
+  }
+  25% {
+    stroke: #DE3E35;
+  }
+  50% {
+    stroke: #F7C223;
+  }
+  75% {
+    stroke: #1DA760;
+  }
 }

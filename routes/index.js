@@ -7,8 +7,8 @@ router.get('/', function(req, res, next) {
   res.render('index');
 });
 
-router.get('/15',function(req, res, next) {
-  const id = 15
+router.get('/1',function(req, res, next) {
+  const id = 1
   Blogs.execute("SELECT * FROM blogs b, usersinfo u WHERE b.id = u.id AND b.id = ?", [id])
     .then((result) => {
       blogResult = result[0]
@@ -25,8 +25,8 @@ router.get('/15',function(req, res, next) {
     })
 });
 
-router.get('/14', function(req, res, next) {
-  const id = 14
+router.get('/2', function(req, res, next) {
+  const id = 2
   Blogs.execute("SELECT * FROM blogs b, usersinfo u WHERE b.id = u.id AND b.id = ?", [id])
   .then((result) => {
     blogResult = result[0]

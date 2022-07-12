@@ -39,7 +39,7 @@
               </a> 
             </li>
             <% role.forEach(function(blog){ %>
-              <% if(blog.role == 'admin'){ %> 
+              <% if(blog.role == 'Admin'){ %> 
                 <li class="nav-item">
                   <a class="nav-link" rel="tooltip" title="ข้อมูลใช้งานส่วนของ sale" data-placement="bottom" href="#">
                     <i class="fa-solid fa-address-card fa-2x"></i>
@@ -47,13 +47,13 @@
                   </a> 
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" rel="tooltip" title="การจัดการ user" data-placement="bottom" href="#">
+                  <a class="nav-link" rel="tooltip" title="การจัดการ user" data-placement="bottom" href="/admin/user-config">
                     <i class="fa-solid fa-users-gear fa-2x"></i>
-                    <p class="d-lg-none d-xl">Admin Dashboard</p>
+                    <p class="d-lg-none d-xl">การจัดการ user</p>
                   </a> 
                 </li>
                 <li class="nav-item">
-                  <a class="nav-link" rel="tooltip" title="System Log" data-placement="bottom" href="#">
+                  <a class="nav-link" rel="tooltip" title="System Log" data-placement="bottom" href="/admin/log">
                     <i class="fa-solid fa-calendar-check fa-2x"></i>
                     <p class="d-lg-none d-xl">System Log</p>
                   </a> 

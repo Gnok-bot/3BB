@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <%- include('../header') %>
+    <title>Log Page</title>
+</head>
+<body class="landing-page sidebar-collapse" style="padding-top: 80px;">
+    <%- include('../navbar') %>
+    <div class="container">
+    <table class="table">
+        <thead>
+            <tr>
+                <th class="text-center">#</th>
+                <th>ชื่อผู้ใช้งาน</th>
+                <th>เวลา</th>
+                <th>IP Address</th>
+                <th class="text-right">Salary</th>
+                <th class="text-right">Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            <% results.forEach(function(res){ %> 
+            <tr>
+                    <td class="text-center"><%= res.auto_id %> </td>
+                    <td><%= res.username %></td>
+                    <td><%= res.timestamp %></td>
+                    <td><%= res.ip_address %></td>
+                <td class="text-right">&euro; 99,225</td>
+                <td class="td-actions text-right">
+                    <button type="button" rel="tooltip" class="btn btn-info">
+                        <i class="now-ui-icons users_single-02"></i>
+                    </button>
+                    <button type="button" rel="tooltip" class="btn btn-success">
+                        <i class="now-ui-icons ui-2_settings-90"></i>
+                    </button>
+                    <button type="button" rel="tooltip" class="btn btn-danger">
+                        <i class="now-ui-icons ui-1_simple-remove"></i>
+                    </button>
+                </td>
+            </tr>
+            <% }) %>
+        </tbody>
+    </table>
+</div>
+</body>
+<%- include('../script') %>
+<script type="text/javascript">
+    $(document).ready(()=>{
+          var $nav = $('.fixed-top');
+              $nav.removeClass('navbar-transparent')
+      });
+  </script>
+</html>
