@@ -137,8 +137,9 @@
                                     <input type="text" name="package[<%=i%>][name]" class="form-control" value="<%=pk.packageName%>" required>
                                 </div>
                                 <div class="form-group py-2 col-md-4">
-                                    <p>ราคาแพ็กเกจ</p> 
-                                    <input type="text" name="package[<%=i%>][price]" class="form-control" value="<%=pk.packagePrice%>" required> 
+                                    <input type="checkbox" name="price" id="price_checkbox" class="form-check-input check-slideBtn ml-0 mt-2" style="margin-top:8px"> 
+                                    <p class="pl-4">แสดงราคาแพ็กเกจ</p> 
+                                    <input type="text" name="package[<%=i%>][price]" class="form-control price" value="<%=pk.packagePrice%>"> 
                                 </div>
                             </div>
                             <div class="form-group py-2 mb-2"> 
@@ -268,12 +269,24 @@
     
     
     $(()=>{
-        enable_cb();
-        $("#banners_checkbox").click(enable_cb)
-    });
+        enable_banners();
+        $("#banners_checkbox").click(enable_banners)
+    })
 
-    function enable_cb(){
+    function enable_banners(){
         $('input.banners').prop("disabled", !this.checked);
+        if(this.checked){
+            $('p.form-label').removeClass('not-enb')
+        }else $('p.form-label').addClass('not-enb')
+    }
+    
+    $(()=>{
+        enable_price();
+        $("#price_checkbox").click(enable_price)
+    })
+
+    function enable_price(){
+        $('input.price').prop("disabled", !this.checked);
         if(this.checked){
             $('p.form-label').removeClass('not-enb')
         }else $('p.form-label').addClass('not-enb')

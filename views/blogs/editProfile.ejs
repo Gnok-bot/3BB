@@ -23,12 +23,12 @@
               </div>
               <% } %>
             </div>
-            <form action="/admin/profile/update" method="post" enctype="multipart/form-data">
+            <% blogs.forEach(function(blog){ %>
+            <form action="/admin/profile/update<%= blog.id%>" method="post" enctype="multipart/form-data">
               <div class="main img-raised rounded">
                 <div class="card-body rounded">
                   <!-- Tab panes -->
                   <div class="tab-content row">
-                    <% blogs.forEach(function(blog){ %>
                     <div class="form-group py-2 col-lg-3">
                         <label for="">รหัสพนักงาน</label>
                         <input name="emp_id"  class="form-control"  value="<%= blog.emp_id%>"></input>

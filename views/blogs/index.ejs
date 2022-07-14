@@ -22,17 +22,21 @@
         <%- include('../navbar') %>
       <% } %>
     <div class="wrapper">
+      <% if(bg != ''){ %> 
       <div class="page-header page-header-small">
         <div class="page-header-image" data-parallax="true" style="background-image: url('/assets/img/<%= bg %>');">
-      </div>
+        </div>
         <div class="content-center">
           <div class="container">         
             <h1 class="title"><%= data %></h1>
           </div>
+          <% } %>
           <% if(locals.isLoggedIn) {%>
+            <% if(!blogs){ %> 
             <div class="buttons">
               <a href="/admin/add" class="btn btn-primary">เขียนบทความ</a>
             </div>
+          <% } %>
           <% } %>
         </div>
       </div>
@@ -42,14 +46,14 @@
       <div class="section section-about">
         <% blogs.forEach(function(blog){ %>
         <div class="container">
-          <% if(locals.isLoggedIn) {%>
-            <div class="text-right">
-              <a href="/admin/edit/<%= blog.id %>" class="btn btn-primary">แก้ไข</a>
-              <a href="/admin/delete/<%= blog.id %>" class="btn btn-danger">ลบ</a>
-            </div>   
-            <% }%>
           <div class="row">
             <div class="col-md-10 ml-auto mr-auto text-center" style="padding: 50px">
+              <% if(locals.isLoggedIn) {%>
+                <div class="text-right">
+                  <a href="/admin/edit/<%= blog.id %>" class="btn btn-primary">แก้ไข</a>
+                  <a href="/admin/delete/<%= blog.id %>" class="btn btn-danger">ลบ</a>
+                </div>   
+                <% }%>
               <img src="/images/<%= blog.id %>/headers/<%= blog.img_logo %>" height="100px" >
               <h2 class="title pt-2 mb-2"><%=blog.title %></h2>
               <div class="ml-auto mr-auto text-center mb-4" id="btn">
@@ -104,7 +108,9 @@
                 <img class="d-block pk-raised" src="/images/<%= packages.id %>/packages/<%= packages.packageImg %>">
                 <h5 class="mt-4 mb-0" style="font-weight:bolder;"> <%= packages.packageName %></h5>
                 <p><%= packages.packageDesc %></p>
+                <% if(packages.packagePrice){ %> 
                 <p>ราคาเริ่มต้น <%= packages.packagePrice %> บาท/เดือน</p>
+                <% } %> 
                 <a href="<%= blog.line_url%>"><button class="btn btn-info">สมัครบริการที่นี่</button></a>
               </div>
               <% }) %>
@@ -173,6 +179,7 @@
           </div>
         </div>
         <%}})%>
+        
     </div>
     <%- include('footer') %> 
     <% }) %>

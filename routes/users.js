@@ -120,9 +120,8 @@ const ifNotAdmin = (req,res,next) => {
 /* GET users listing. */
 router.get('/', ifNotLoggedIn, function (req, res, next) {
   Blogs.execute("SELECT username FROM users WHERE id = ?", [req.session.id])
-    .then(([rows]) => {
-      res.redirect('/admin/blogs')
-    })
+    .then(
+res.redirect('/admin/blogs'))
 });
 router.get('/adduser', ifNotAdmin,(req, res) => {
   res.render('register')
@@ -313,10 +312,40 @@ router.get('/logout', (req, res) => {
 // System Log
 router.get('/log', ifNotLoggedIn, ifNotAdmin, (req, res, next) => {
   const id = req.session.id
-  Blogs.execute('SELECT * FROM logs').then((results)=>{
+  const resultsPerPage = 15
+  Blogs.execute('SELECT * FROM logs').then((result)=>{
+    result = result[0]
+    const numOfResults = result.length
+    const numOfPages = Math.ceil(numOfResults / resultsPerPage)
+    let page = req.query.page ? Number(req.query.page) : 1
+    if(page > numOfPages){
+      res.redirect('/?page='+encodeURIComponent(numOfPages));
+    }else if(page < 1){
+      res.redirect('/?page='+encodeURIComponent('1'));
+    }
+    // SQL LIMIT starting Number
+    const startingLimit = (page - 1) * resultsPerPage
+    Blogs.execute(`SELECT * FROM logs LIMIT ${startingLimit},${resultsPerPage}`).then((results)=>{
+      results = results[0]
+      let iterator = (page - 4) < 1 ? 1 : page - 4
+      let endingLink = (iterator + 9) <= numOfPages ? (iterator + 9) : page + (numOfPages - page)
+      if(endingLink < (page)){
+        iterator -= (page) - numOfPages;
+      }
+      Blogs.execute('SELECT role FROM users WHERE id = ?',[id]).then((result)=>{
+        res.render("blogs/log",{role: result[0], results: results, page, iterator, endingLink, numOfPages});
+      }).catch((err)=>{if (err) throw err})
+    }).catch((err)=>{if (err) throw err})
+  }).catch((err)=>{if (err) throw err})
+})
+
+// System Log
+router.get('/weblists', ifNotLoggedIn, ifNotAdmin, (req, res, next) => {
+  const id = req.session.id
+  Blogs.execute('SELECT * FROM usersinfo').then((results)=>{
     results = results[0]
     Blogs.execute('SELECT role FROM users WHERE id = ?',[id]).then((result)=>{
-      res.render("blogs/log",{role: result[0], results: results});
+      res.render("blogs/weblists",{role: result[0], results: results});
     }).catch((err)=>{if (err) throw err})
   }).catch((err)=>{if (err) throw err})
 })
@@ -330,6 +359,30 @@ router.get('/user-config', ifNotLoggedIn, ifNotAdmin, (req, res, next) => {
       res.render("blogs/userconfig",{role: result[0], results: results});
     }).catch((err)=>{if (err) throw err})
   }).catch((err)=>{if (err) throw err})
+})
+
+//Profile lookup
+router.get('/profile-lookup/:id', ifNotLoggedIn, ifNotAdmin, (req, res, next) => {
+  var id = req.params.id
+  Blogs.execute('SELECT * FROM usersinfo WHERE id=?', [id])
+  .then((blog) => {
+    blogResult = blog[0]
+    Blogs.execute('SELECT role FROM users WHERE id = ?',[id]).then((result)=>{
+      res.render("blogs/profile",{role:result[0], blogs:blogResult});
+    }).catch((err)=>{ if (err) throw err })
+  }).catch((err) => { if (err) throw err; })
+})
+
+//Profile EDIT by ADMIN 
+router.get('/profile-edit/:id', ifNotLoggedIn, ifNotAdmin, (req, res, next) => {
+  var id = req.params.id
+  Blogs.execute('SELECT * FROM usersinfo WHERE id=? ', [id])
+    .then((blog) => {
+      blogResult = blog[0]
+      Blogs.execute('SELECT role FROM users WHERE id = ?',[id]).then((result)=>{
+        res.render("blogs/editProfile",{role: result[0], blogs: blogResult});
+      }).catch((err)=>{ if (err) throw err })
+    }).catch((err) => { if (err) throw err })
 })
 
 // Blog page
@@ -396,14 +449,13 @@ router.get('/add', ifNotLoggedIn, function (req, res, next) {
 //profile page
 router.get('/profile', ifNotLoggedIn, function (req, res, next) {
   const id = req.session.id
-  Blogs.execute('SELECT * FROM usersinfo WHERE id=? LIMIT 1', [id])
+  Blogs.execute('SELECT * FROM usersinfo WHERE id=?', [id])
     .then((blog) => {
       blogResult = blog[0]
       Blogs.execute('SELECT role FROM users WHERE id = ?',[id]).then((result)=>{
         res.render("blogs/profile",{role:result[0], blogs:blogResult});
       }).catch((err)=>{ if (err) throw err })
     }).catch((err) => { if (err) throw err; })
-
 });
 
 router.get('/profile/add/', ifNotLoggedIn, function (req, res, next) {
@@ -443,29 +495,55 @@ router.get('/profile/edit?:id', ifNotLoggedIn, function (req, res, next) {
     }).catch((err) => { if (err) throw err })
 });
 
-router.post('/profile/update', upload.single('line_qrcode'), (req, res, next) => {
+router.post('/profile/update?:id', upload.single('line_qrcode'), (req, res, next) => {
   const id = req.session.id
-  const { emp_id, firstName, lastName, email, telNum, line_url, fb_url, area, province, address } = req.body
-  if (req.file != null) {
-    line_qrcode = req.file.filename
-    const path = './public/images/' + req.session.id + '/qrcode/' + req.body.line_qrcodePrev
-    fs.remove(path, (err) => {
-      if (err) throw err;
-    })
-  } else {
-    line_qrcode = req.body.line_qrcodePrev
-  }
-  Blogs.execute("UPDATE usersinfo SET emp_id = ?, firstName = ?, lastName = ?, email = ?, telNum = ?, line_url = ?, line_qrcode = ?, fb_url = ?, area = ?, province = ?, address = ? \
-    WHERE id = ?", [emp_id, firstName, lastName, email, telNum, line_url, line_qrcode, fb_url, area, province, address, id])
-    .then(
-      Blogs.execute("UPDATE users SET firstName = ?, lastName = ? WHERE id= ?",[firstName,lastName,id]).then(
-        res.redirect('/admin/profile')
+  Blogs.execute('SELECT role FROM users WHERE id= ? ',[id]).then((result)=>{
+    role = result[0][0].role
+    if(role != 'Admin'){
+      const id = req.session.id
+    }else {
+      const id = req.params.id
+    }
+    const { emp_id, firstName, lastName, email, telNum, line_url, fb_url, area, province, address } = req.body
+    if (req.file != null) {
+      line_qrcode = req.file.filename
+      const path = './public/images/' + req.session.id + '/qrcode/' + req.body.line_qrcodePrev
+      fs.remove(path, (err) => {
+        if (err) throw err;
+      })
+    } else {
+      line_qrcode = req.body.line_qrcodePrev
+    }
+    Blogs.execute("UPDATE usersinfo SET emp_id = ?, firstName = ?, lastName = ?, email = ?, telNum = ?, line_url = ?, line_qrcode = ?, fb_url = ?, area = ?, province = ?, address = ? \
+      WHERE id = ?", [emp_id, firstName, lastName, email, telNum, line_url, line_qrcode, fb_url, area, province, address, id])
+      .then(
+        Blogs.execute("UPDATE users SET firstName = ?, lastName = ? WHERE id= ?",[firstName,lastName,id]).then(
+          res.redirect('/admin/profile')
+        ).catch((err) => {
+          if (err) throw err;
+        })
       ).catch((err) => {
         if (err) throw err;
       })
-    ).catch((err) => {
-      if (err) throw err;
-    })
+  })
+})
+
+router.get('/delete-account/:id', ifNotLoggedIn, ifNotAdmin, (req, res) =>{
+  const id = req.params.id
+  Blogs.execute("DELETE FROM users WHERE id= ?",[id]).then(
+    Blogs.execute("DELETE blogs,promotion,packages,usersinfo,google_tag \
+      FROM blogs INNER JOIN promotion ON blogs.id = promotion.id \
+      INNER JOIN packages ON blogs.id = packages.id \
+      INNER JOIN usersinfo ON blogs.id = usersinfo.id \
+      INNER JOIN google_tag ON blogs.id = google_tag.id \
+      WHERE blogs.id=?", [id])
+      .then(
+        fs.remove('./public/images/' + id, err => {if (err) return console.error(err)}),
+        res.redirect('/admin/user-config'))
+      .catch((err) => {
+        if (err) throw err;
+      })
+  )
 })
 
 
@@ -495,8 +573,10 @@ router.get('/edit/:id', ifNotLoggedIn, function (req, res, next) {
       blogResult = blog[0]
       Blogs.execute("SELECT * FROM packages p WHERE p.id = ?", [id]).then((result) => {
         packResult = result[0]
-        res.render("blogs/editForm", { data: "แก้ไข blog", blog: blogResult, packages: packResult });
-      })
+        Blogs.execute('SELECT role FROM users WHERE id = ?',[id]).then((result)=>{
+          res.render("blogs/editForm", { data: "แก้ไข blog", blog: blogResult, packages: packResult,role:result[0] });
+        }).catch((err)=>{if (err) throw err})
+      }).catch((err)=>{if (err) throw err})
     }).catch((err) => {
       if (err) throw err;
     })
@@ -535,7 +615,11 @@ router.post('/add', imgUpload, function (req, res, next) {
   const index = req.body.packageName.length;
   for (i = 0; i < index; i++) {
     packageName = req.body.packageName[i]
-    packagePrice = req.body.packagePrice[i] 
+    if(req.body.package[i-1].price){
+      packagePrice = req.body.package[i - 1].price
+    }else{
+      packagePrice = ''
+    }
     packageDesc = req.body.packageDesc[i]
     packageImg = req.files['packageImg'][i].filename
 
@@ -568,7 +652,6 @@ const imgUpdate = upload.fields([{ name: 'img_logo', maxCount: 1 }, { name: 'pro
 { name: 'packageImg7', maxCount: 1 }, { name: 'packageImg8', maxCount: 1 }, { name: 'img', maxCount: 8 }])
 
 router.post('/update', imgUpdate, function (req, res, next) {
-  // console.log(req.body);
   id = req.session.id
   title = req.body.title,
     subtitle = req.body.subtitle
@@ -591,7 +674,7 @@ router.post('/update', imgUpdate, function (req, res, next) {
       img_header = 'bg6.jpg'
     }
   }else{
-    img_header = req.body.img_headerPrev
+    img_header = ''
   }
 
   //Banner Img 
@@ -655,7 +738,11 @@ router.post('/update', imgUpdate, function (req, res, next) {
   const index = req.body.package.length
   for (i = 1; i <= index; i++) {
     packageName = req.body.package[i - 1].name
-    packagePrice = req.body.package[i - 1].price
+    if(req.body.package[i-1].price){
+      packagePrice = req.body.package[i - 1].price
+    }else{
+      packagePrice = ''
+    }
     packageDesc = req.body.package[i - 1].desc
 
     if (typeof req.files['packageImg' + i] !== 'undefined') {
