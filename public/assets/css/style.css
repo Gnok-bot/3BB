@@ -729,10 +729,17 @@ b{
 
 input{
   font-family: 'Kanit';
-
 }
 
 input::placeholder{
+  font-family: 'Kanit';
+}
+
+select{
+  font-family: 'Kanit';
+}
+
+button{
   font-family: 'Kanit';
 }
 

@@ -251,7 +251,7 @@ function sendEmail(email, token) {
       from: process.env.EMAIL_FROM,
       to: email,
       subject: 'คำร้องขอเปลี่ยนรหัสผ่าน',
-      html: '<p>คุณได้ส่งคำร้องขอเปลี่ยนรหัสผ่าน กรุณา <a href="http://localhost:3000/admin/set-password?token=' + token + '">คลิ๊กที่นี่</a> เพื่อทำการเข้าหน้าเปลี่ยนรหัสผ่าน</p> \
+      html: '<p>คุณได้ส่งคำร้องขอเปลี่ยนรหัสผ่าน กรุณา <a href="http://localhost:3000/admin/set-password?token=' + token + '">คลิกที่นี่</a> เพื่อทำการเข้าหน้าเปลี่ยนรหัสผ่าน</p> \
       <p>ลิ้งค์จะหมดอายุภายใน 1 ชั่วโมง<p>'
   };
   mail.sendMail(mailOptions, function(error, info) {
@@ -355,6 +355,36 @@ router.get('/log', ifNotLoggedIn, ifNotAdmin, (req, res, next) => {
       }
       Blogs.execute('SELECT role FROM users WHERE id = ?',[id]).then((result)=>{
         res.render("blogs/log",{role: result[0], results: results, page, iterator, endingLink, numOfPages});
+      }).catch((err)=>{if (err) throw err})
+    }).catch((err)=>{if (err) throw err})
+  }).catch((err)=>{if (err) throw err})
+})
+
+// System Log
+router.get('/gtag-lists', ifNotLoggedIn, ifNotAdmin, (req, res, next) => {
+  const id = req.session.id
+  const resultsPerPage = 10
+  Blogs.execute('SELECT g.*, u.firstName , u.lastName  FROM google_tag g, users u WHERE g.id = u.id').then((results)=>{
+    results = results[0]
+    const numOfResults = results.length
+    const numOfPages = Math.ceil(numOfResults / resultsPerPage)
+    let page = req.query.page ? Number(req.query.page) : 1
+    if(page > numOfPages){
+      res.redirect('/?page='+encodeURIComponent(numOfPages));
+    }else if(page < 1){
+      res.redirect('/?page='+encodeURIComponent('1'));
+    }
+    // SQL LIMIT starting Number
+    const startingLimit = (page - 1) * resultsPerPage
+    Blogs.execute(`SELECT g.*, u.firstName , u.lastName FROM google_tag g, users u WHERE g.id = u.id LIMIT ${startingLimit},${resultsPerPage} ;`).then((results)=>{
+      results = results[0]
+      let iterator = (page - 4) < 1 ? 1 : page - 4
+      let endingLink = (iterator + 9) <= numOfPages ? (iterator + 9) : page + (numOfPages - page)
+      if(endingLink < (page)){
+        iterator -= (page) - numOfPages;
+      }
+      Blogs.execute('SELECT role FROM users WHERE id = ?',[id]).then((result)=>{
+        res.render("blogs/taglists",{role: result[0], results: results, page, iterator, endingLink, numOfPages});
       }).catch((err)=>{if (err) throw err})
     }).catch((err)=>{if (err) throw err})
   }).catch((err)=>{if (err) throw err})
@@ -603,7 +633,9 @@ const imgUpload = upload.fields([{ name: 'img_logo', maxCount: 1 }, { name: 'pro
 { name: 'packageImg', maxCount: 8 }, { name: 'img', maxCount: 8 }])
 router.post('/add', imgUpload, function (req, res, next) {
   id = req.session.id
-  title = req.body.title,
+  if(req.body.title != ''){
+    title = req.body.title
+  }else title = ''
     subtitle = req.body.subtitle,
     img_logo = req.files['img_logo'][0].filename
     if(req.body.cardinfo != null){
@@ -631,10 +663,10 @@ router.post('/add', imgUpload, function (req, res, next) {
   const index = req.body.packageName.length;
   for (i = 0; i < index; i++) {
     packageName = req.body.packageName[i]
-    if(req.body.package[i-1].price){
-      packagePrice = req.body.package[i - 1].price
-    }else{
+    if(req.body.price == 'on'){
       packagePrice = ''
+    }else{
+      packagePrice = req.body.package[i - 1].price
     }
     packageDesc = req.body.packageDesc[i]
     packageImg = req.files['packageImg'][i].filename
@@ -669,7 +701,9 @@ const imgUpdate = upload.fields([{ name: 'img_logo', maxCount: 1 }, { name: 'pro
 
 router.post('/update', imgUpdate, function (req, res, next) {
   id = req.session.id
-  title = req.body.title,
+  if(req.body.title != ''){
+    title = req.body.title
+  }else title = ''
     subtitle = req.body.subtitle
   if (req.files['img_logo'] != null) {
     img_logo = req.files['img_logo'][0].filename
@@ -798,6 +832,13 @@ router.get('/delete-pk/:packageNo', ifNotLoggedIn, function (req, res, next) {
     }) 
   Blogs.execute('DELETE FROM packages WHERE packageNo = ? AND id= ?', [packageNo, id])
     .then(res.redirect("/admin/edit/" + id))
+});
+
+router.post('/edit-tag/:id', ifNotLoggedIn, function (req, res, next) {
+  const {google_analytic,google_manager,google_verification} = req.body
+  const id = req.params.id
+  Blogs.execute('UPDATE google_tag SET google_analytic = ?, google_manager = ?, google_verification =? WHERE id = ?',[google_analytic,google_manager,google_verification,id])
+  .then(res.redirect('/admin/gtag-lists')).catch((err) => {if (err) throw err})
 });
 
 router.get('/footer', ifNotLoggedIn, function (req, res, next) {

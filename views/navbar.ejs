@@ -23,21 +23,20 @@
         <div class="collapse navbar-collapse justify-content-end" id="navigation">
           <ul class="navbar-nav">
             <li class="nav-item">
-              <a class="nav-link" href="/admin">กลับหน้าหลัก</a>
-            </li>
-            
-            <li class="nav-item">
-              <a class="nav-link" rel="tooltip" title="ข้อมูลผู้ใช้งาน" data-placement="bottom" href="/admin/profile">
-                <i class="fas fa-user-circle fa-2x" style="padding-top:2px  "></i>
-                <p class="d-lg-none d-xl-none">ข้อมูลผู้ใช้งาน</p>
+              <a class="nav-link" rel="tooltip" title="กลับหน้าหลัก" data-placement="bottom" href="/admin/">
+                <i class="fa-solid fa-house fa-2x" style="padding-top: 2px;"></i>
+                <p class="d-lg-none d-xl">กลับหน้าหลัก</p>
               </a>
             </li>
+            <% role.forEach(function(blog){ %>
+              <% if(blog.role == 'Sale'){ %> 
             <li class="nav-item">
               <a class="nav-link" rel="tooltip" title="ติด Tag Google" data-placement="bottom" href="/admin/googletag">
                 <i class="fab fa-google fa-sm"></i>
                 <p class="d-lg-none d-xl">ติด Tag Google</p>
               </a> 
             </li>
+            <% }}) %> 
             <% role.forEach(function(blog){ %>
               <% if(blog.role == 'Admin'){ %> 
                 <li class="nav-item">
@@ -53,6 +52,12 @@
                   </a> 
                 </li>
                 <li class="nav-item">
+                  <a class="nav-link" rel="tooltip" title="Tag Google ของ Sale" data-placement="bottom" href="/admin/gtag-lists">
+                    <i class="fab fa-google fa-sm"></i>
+                    <p class="d-lg-none d-xl">Tag Google ของ Sale</p>
+                  </a> 
+                </li>
+                <li class="nav-item">
                   <a class="nav-link" rel="tooltip" title="System Log" data-placement="bottom" href="/admin/log">
                     <i class="fa-solid fa-calendar-check fa-2x"></i>
                     <p class="d-lg-none d-xl">System Log</p>
@@ -64,14 +69,18 @@
                     <p class="d-lg-none d-xl">รายงาน</p>
                   </a> 
                 </li>
-                <li class="nav-item">
-                  <a class="nav-link" rel="tooltip" title="เพิ่มรหัสพนักงาน" data-placement="bottom" href="/admin/adduser">
-                    <i class="fa-solid fa-user-plus fa-2x"></i>
-                    <p class="d-lg-none d-xl">เพิ่มรหัสพนักงาน</p>
-                  </a> 
-                </li>
               <% } %> 
-            <% }) %>   
+            <% }) %>  
+            <li class="nav-item">
+              <a class="nav-link" rel="tooltip" title="ข้อมูลผู้ใช้งาน" data-placement="bottom" href="/admin/profile">
+                <i class="fas fa-user-circle fa-2x" style="padding-top:2px  "></i>
+                <p class="d-lg-none d-xl-none">ข้อมูลผู้ใช้งาน</p>
+              </a>
+            </li>
+            <!-- <li class="nav-item">
+              <a class="nav-link" href="/admin">ชื่อพนักงาน</a>
+            </li> -->
+             
             <li class="nav-item">
               <a class="nav-link" rel="tooltip" title="ออกจากระบบ" data-placement="bottom" href="/admin/logout">
                 <i class="fas fa-arrow-right-from-bracket fa-xl"></i>
