@@ -12,14 +12,14 @@
             <tr>
                 <th class="text-center">#</th>
                 <th>ชื่อผู้ใช้งาน</th>
-                <th>เวลา</th>
+                <th>เวลาที่เข้าใช้งาน</th>
                 <th>IP Address</th>
             </tr>
         </thead>
         <tbody>
             <% results.forEach(function(res){ %> 
             <tr>
-                    <td class="text-center"><%= res.auto_id %> </td>
+                    <td class="text-center"><%= res.auto_id%> </td>
                     <td><%= res.username %></td>
                     <td><%= res.timestamp %></td>
                     <td><%= res.ip_address %></td>

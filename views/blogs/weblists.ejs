@@ -7,6 +7,14 @@
 <body class="landing-page sidebar-collapse" style="padding-top: 80px;">
     <%- include('../navbar') %>
     <div class="container">
+        <div class="row">
+            <div class="col">
+                <p>รายชื่อ Website</p>
+            </div>
+            <div class="col ">
+                <input class="form-control mb-1 search-bar" id="userInput" type="text" placeholder="Search..">
+            </div>
+        </div>  
     <table class="table table-striped table-bordered table-sm" id="table">
         <thead>
             <tr>
@@ -19,7 +27,7 @@
                 <th class="text-right">Actions</th>
             </tr>
         </thead>
-        <tbody>
+        <tbody id="userTable">
             <% results.forEach(function(res){ %> 
             <tr>
                     <!-- <td class="text-center"><%= res.auto_id %> </td> -->
@@ -28,14 +36,14 @@
                     <td><%= res.area %></td>
                     <td><%= res.province %></td>
                     <td class="text-right">&euro; 99,225</td>
-                <td class="td-actions text-right">
-                    <button type="button" rel="tooltip" class="btn btn-info">
+                <td class="td-actions text-right p-0 pr-1">
+                    <button type="button" rel="tooltip" class="btn btn-info btn-sm">
                         <i class="now-ui-icons users_single-02"></i>
                     </button>
-                    <button type="button" rel="tooltip" class="btn btn-success">
+                    <button type="button" rel="tooltip" class="btn btn-success btn-sm">
                         <i class="now-ui-icons ui-2_settings-90"></i>
                     </button>
-                    <button type="button" rel="tooltip" class="btn btn-danger">
+                    <button type="button" rel="tooltip" class="btn btn-danger btn-sm">
                         <i class="now-ui-icons ui-1_simple-remove"></i>
                     </button>
                 </td>
@@ -69,6 +77,13 @@
     $(document).ready(()=>{
           var $nav = $('.fixed-top');
               $nav.removeClass('navbar-transparent')
+
+              $("#userInput").on("keyup", function() {
+                var value = $(this).val().toLowerCase();
+                $("#userTable tr").filter(function() {
+                  $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+                });
+              });
       });
 
 </script>

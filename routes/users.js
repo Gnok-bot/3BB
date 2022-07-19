@@ -1,16 +1,12 @@
-const e = require('express');
 const express = require('express');
 const multer = require('multer');
 const bcrypt = require('bcrypt');
 const cookieSession = require('cookie-session')
 const { body, validationResult } = require('express-validator')
 const Blogs = require('../models/blogs');
-const app = require('../app');
-const { execute } = require('../models/blogs');
 const fs = require('fs-extra');
-const path = require('path')
 const nodemailer = require('nodemailer')
-const randtoken = require('rand-token')
+const jwt = require('jsonwebtoken')
 const dotenv = require('dotenv')
 dotenv.config()
 
@@ -87,7 +83,7 @@ const upload = multer({
 
 router.use(cookieSession({
   name: 'session',
-  keys: ['key1', 'key2', 'key3'],
+  keys: ['key1', 'key2'],
   maxAge: 3600 * 1000 // 1hr  
 }))
 
@@ -123,9 +119,11 @@ router.get('/', ifNotLoggedIn, function (req, res, next) {
     .then(
 res.redirect('/admin/blogs'))
 });
+
 router.get('/adduser', ifNotAdmin,(req, res) => {
   res.render('register')
 })
+
 
 router.post('/adduser', ifNotLoggedIn, [
   body('username', 'ชื่อผู้ใช้งานไม่ถูกต้อง').custom((value) => {
@@ -149,11 +147,11 @@ router.post('/adduser', ifNotLoggedIn, [
             res.render('succeed')
             Blogs.execute("SELECT id FROM users WHERE username = ?",[username])
             .then((result)=>{
-              fs.ensureDir('./public/images/' + result[0][0].id + '/banners', err => {console.log(err)})
-              fs.ensureDir('./public/images/' + result[0][0].id + '/headers', err => {console.log(err)})
-              fs.ensureDir('./public/images/' + result[0][0].id + '/packages', err => {console.log(err)})
-              fs.ensureDir('./public/images/' + result[0][0].id + '/promos', err => {console.log(err)})
-              fs.ensureDir('./public/images/' + result[0][0].id + '/qrcode', err => {console.log(err)})
+              fs.ensureDir('./public/images/' + result[0][0].id + '/banners', err => { if (err) console.log(err)})
+              fs.ensureDir('./public/images/' + result[0][0].id + '/headers', err => { if (err) console.log(err)})
+              fs.ensureDir('./public/images/' + result[0][0].id + '/packages', err => { if (err) console.log(err)})
+              fs.ensureDir('./public/images/' + result[0][0].id + '/promos', err => { if (err) console.log(err)})
+              fs.ensureDir('./public/images/' + result[0][0].id + '/qrcode', err => { if (err) console.log(err)})
             })
           }).catch(err => {
             if (err) throw err;
@@ -239,31 +237,30 @@ router.get('/forgot', (req,res)=>{
 
 //send email
 function sendEmail(email, token) {
- 
   var email = email;
   var token = token;
-
-var transporter = nodemailer.createTransport({
-  host: "smtp.ethereal.email",
-  port: 587,
-  secure: false, // true for 465, false for other ports
-  auth: { user: "gnoktester@gmail.com", 
-          pass: "ochuewascdsojvne" }, 
+  var mail = nodemailer.createTransport({
+    host: 'smtps.jasmine.com',
+    port: '465',
+    auth: {
+      user: process.env.MAIL_USERNAME,
+      pass: process.env.MAIL_PASSWORD,
+    }
   });
-
   var mailOptions = {
-      from: 'gnoktester@outlook.com',
-      to: 'gnoktester@gmail.com',
-      subject: 'Reset Password Link',
-      html: '<p>You requested for reset password, kindly use this <a href="http://localhost:3000/reset-password?token=' + token + '">link</a> to reset your password</p>'
-
+      from: process.env.EMAIL_FROM,
+      to: email,
+      subject: 'คำร้องขอเปลี่ยนรหัสผ่าน',
+      html: '<p>คุณได้ส่งคำร้องขอเปลี่ยนรหัสผ่าน กรุณา <a href="http://localhost:3000/admin/set-password?token=' + token + '">คลิ๊กที่นี่</a> เพื่อทำการเข้าหน้าเปลี่ยนรหัสผ่าน</p> \
+      <p>ลิ้งค์จะหมดอายุภายใน 1 ชั่วโมง<p>'
   };
-  transporter.sendMail(mailOptions, function (err, info) {
-    if(err)
-      console.log(err)
-    else
-      console.log(info);
- });
+  mail.sendMail(mailOptions, function(error, info) {
+      if (error) {
+          console.log("Error " + err)
+      } else {
+          console.log("Email sent successfully")
+      }
+  });
 }
 
 // send reset password link in email
@@ -273,34 +270,58 @@ router.post('/reset-password', (req,res)=>{
     if(err) throw err;
     if(typeof result[0][0] != 'undefined'){
       if(result[0][0].email.length > 0){
-        var token = randtoken.generate(20);
+        var token = jwt.sign({email: email}, process.env.SECRET_KEY,{expiresIn: '1h'})
         var sent = sendEmail(email, token);
         if(sent != '0'){
-          Blogs.execute('SELECT id FROM usersinfo WHERE email = ?',[email]).then(
-            (result)=>{
-              console.log(result[0][0].id);
-              id = result[0][0].id;
-              Blogs.execute('UPDATE users SET token = ? WHERE id = ?', [token,id]).then()
-              .catch((err)=>{
-                if (err) throw err;
-              })
-            }
-          )
-          .catch((err)=>{
-            if (err) throw err;
-          })
-          console.log('success') 
+          var success_msg = 'ส่งคำร้องขอเปลี่ยนรหัสผ่านเรียบร้อย'
+          res.render('forgot',{success_msg:success_msg})
         } else {
           console.log('error something wrong') 
         }
       } else {'error something wrong'}
     }else {
       console.log('The Email is not registered with us') 
+      var err = 'ไม่มีอีเมลนี้อยู่ในระบบ'
+      res.render('forgot',{err:err})
     }
-    // res.redirect('/forgot');
   }).catch((err)=>{
     if (err) throw err;
   })
+})
+
+router.get('/set-password?', function(req, res, next) {
+  res.render('reset-password', {token: req.query.token }); 
+});
+
+router.post('/update-password', [
+  body('password', 'รหัสผ่านควรมีมากกว่า 6 ตัวขึ้นไป').trim().isLength({min: 6})
+], (req, res) =>{
+  const validation_result = validationResult(req)
+  const {token , password} = req.body
+  if(validation_result.isEmpty()){
+    jwt.verify(token,process.env.SECRET_KEY,(err, decode) =>{
+      if(err){
+        var err = 'Token หมดอายุหรือ Token ไม่ถูกต้อง'
+        res.render('reset-password', {err: err, token})
+      }else{
+        bcrypt.hash(password, 12).then((hash_pass) => {
+          // console.log(hash_pass);
+          Blogs.execute('UPDATE users u \
+          INNER JOIN usersinfo ui ON u.id = ui.id \
+          SET u.password = ? \
+          WHERE ui.email = ?',[hash_pass,decode.email])
+          var success_msg = 'เปลี่ยนรหัสผ่านเรียบร้อย... ระบบจะพาคุณไปยังหน้าเข้าสู่ระบบ'
+          res.render('reset-password', {success_msg: success_msg, token})
+        })
+      }
+    })
+  }
+  else {
+    let allErr = validation_result.errors.map((error) => {
+      return error.msg;
+    })
+    res.render('reset-password', {reset_errs: allErr, token})
+  }
 })
 
 //logout
@@ -325,7 +346,7 @@ router.get('/log', ifNotLoggedIn, ifNotAdmin, (req, res, next) => {
     }
     // SQL LIMIT starting Number
     const startingLimit = (page - 1) * resultsPerPage
-    Blogs.execute(`SELECT * FROM logs LIMIT ${startingLimit},${resultsPerPage}`).then((results)=>{
+    Blogs.execute(`SELECT * FROM logs ORDER BY timestamp DESC  LIMIT ${startingLimit},${resultsPerPage} ;`).then((results)=>{
       results = results[0]
       let iterator = (page - 4) < 1 ? 1 : page - 4
       let endingLink = (iterator + 9) <= numOfPages ? (iterator + 9) : page + (numOfPages - page)
@@ -379,6 +400,7 @@ router.get('/profile-edit/:id', ifNotLoggedIn, ifNotAdmin, (req, res, next) => {
   Blogs.execute('SELECT * FROM usersinfo WHERE id=? ', [id])
     .then((blog) => {
       blogResult = blog[0]
+      var id = req.session.id
       Blogs.execute('SELECT role FROM users WHERE id = ?',[id]).then((result)=>{
         res.render("blogs/editProfile",{role: result[0], blogs: blogResult});
       }).catch((err)=>{ if (err) throw err })
@@ -393,8 +415,10 @@ router.get('/blogs', ifNotLoggedIn, function (req, res, next) {
       blogResult = result[0]
       if(blogResult == ''){
         bg = 'bg5.jpg'
+        var createBtn = 'on'
       } else{
         bg = result[0][0].img_header
+        var createBtn = 'off'
       }
       Blogs.execute("SELECT * FROM promotion p WHERE p.id = ?", [id]).then((result) => {
         promoResult = result[0]
@@ -402,7 +426,7 @@ router.get('/blogs', ifNotLoggedIn, function (req, res, next) {
           packResult = result[0]
           Blogs.execute("SELECT role FROM users WHERE id = ?",[id]).then((result)=>{
             role = result[0]
-            res.render("blogs/index", { data: "3BB ระบบหลังบ้าน", bg: bg, blogs: blogResult, promo: promoResult, packages: packResult, role:role, isLoggedIn: "admin" });
+            res.render("blogs/index", { data: "3BB ระบบหลังบ้าน", bg: bg, blogs: blogResult, promo: promoResult, packages: packResult, role:role, isLoggedIn: "admin" , tag: '', createBtn:createBtn});
           })
         })
       })
@@ -496,15 +520,8 @@ router.get('/profile/edit?:id', ifNotLoggedIn, function (req, res, next) {
 });
 
 router.post('/profile/update?:id', upload.single('line_qrcode'), (req, res, next) => {
-  const id = req.session.id
-  Blogs.execute('SELECT role FROM users WHERE id= ? ',[id]).then((result)=>{
-    role = result[0][0].role
-    if(role != 'Admin'){
-      const id = req.session.id
-    }else {
-      const id = req.params.id
-    }
-    const { emp_id, firstName, lastName, email, telNum, line_url, fb_url, area, province, address } = req.body
+  const id = req.params.id
+  const { emp_id, firstName, lastName, email, telNum, line_url, fb_url, area, province, address } = req.body
     if (req.file != null) {
       line_qrcode = req.file.filename
       const path = './public/images/' + req.session.id + '/qrcode/' + req.body.line_qrcodePrev
@@ -525,7 +542,6 @@ router.post('/profile/update?:id', upload.single('line_qrcode'), (req, res, next
       ).catch((err) => {
         if (err) throw err;
       })
-  })
 })
 
 router.get('/delete-account/:id', ifNotLoggedIn, ifNotAdmin, (req, res) =>{

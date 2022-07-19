@@ -56,6 +56,14 @@
         </div>
         <div class="col-md-6 table-scroll">
         <table class="table card-table">
+            <div class="row">
+                <div class="col">
+                    <p>รายชื่อ Users</p>
+                </div>
+                <div class="col ">
+                    <input class="form-control mb-1 search-bar" id="userInput" type="text" placeholder="Search..">
+                </div>
+            </div>
             <thead>
                 <tr>
                     <th class="text-center">#</th>
@@ -66,10 +74,10 @@
                     <th class="text-right">Actions</th> 
                 </tr>
             </thead>
-            <tbody>
-                <% results.forEach(function(res){ %> 
+            <tbody id="userTable">
+                <% results.forEach(function(res,i){ %> 
                 <tr>
-                    <td class="text-center" style="height: 40px;"><%= res.id %></td>
+                    <td class="text-center" style="height: 40px;"><%= i+1 %></td>
                     <td><%= res.username %></td>
                     <td><%= res.firstName %></td>
                     <td><%= res.lastName %></td>
@@ -101,7 +109,14 @@
 <script type="text/javascript">
     $(document).ready(()=>{
           var $nav = $('.fixed-top');
-              $nav.removeClass('navbar-transparent')
+          $nav.removeClass('navbar-transparent')
+
+          $("#userInput").on("keyup", function() {
+            var value = $(this).val().toLowerCase();
+            $("#userTable tr").filter(function() {
+              $(this).toggle($(this).text().toLowerCase().indexOf(value) > -1)
+            });
+          });
       });
   </script>
 </html>

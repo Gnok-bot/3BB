@@ -1,7 +1,7 @@
 @import url('https://fonts.googleapis.com/css2?family=Kanit&display=swap');
 
 *{
-  font-family: 'Kanit', sans-serif;
+  font-family: 'Kanit';
 }
 
 footer {
@@ -73,10 +73,6 @@ b{
 .promotion h2{
   text-align: center;
   font-weight: bold;
-}
-
-*{
-  font-family: 'Kanit', sans-serif;
 }
 
 .tim-row {
@@ -731,6 +727,11 @@ b{
   font-family: 'Kanit';
 }
 
+input{
+  font-family: 'Kanit';
+
+}
+
 input::placeholder{
   font-family: 'Kanit';
 }
@@ -849,3 +850,6 @@ textarea{
   }
 }
 
+.search-bar{
+  background-color: white;
+}

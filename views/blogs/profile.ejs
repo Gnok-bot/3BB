@@ -95,15 +95,10 @@
 </body>
 <%- include('../script') %>
 <script type="text/javascript">
-  $(document).scroll(()=>{
-        var $nav = $('.fixed-top');
-        var scroll = $(window).scrollTop();
-        if (scroll >= 100){
-            $nav.removeClass('navbar-transparent')
-        }else{
-            $nav.addClass('navbar-transparent')
-        }
-    });
+  $(document).ready(()=>{
+    var $nav = $('.fixed-top');
+        $nav.removeClass('navbar-transparent')
+}); 
 </script>
 
 </html>

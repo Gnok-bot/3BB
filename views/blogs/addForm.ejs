@@ -133,8 +133,8 @@
                     <div class="row  package-card container" id="div"><div class="col-md-8"><div class="row"><div class="form-group py-2 col-md-8"><p>ชื่อแพ็กเกจ</p> \
                         <input type="text" name="packageName[]" class="form-control" required></div> \
                             <div class="form-group py-2 col-md-4"> \
-                        <input type="checkbox" name="price" id="price_checkbox" class="form-check-input check-slideBtn ml-0 mt-2" style="margin-top:8px"> \
-                        <p>ราคาแพ็กเกจ</p> \
+                                <input type="checkbox" name="price" id="price_checkbox" class="form-check-input check-slideBtn ml-0 mt-2" style="margin-top:8px">  \
+                        <p class="ml-4">แสดงราคาแพ็กเกจ</p> \
                         <input type="text" name="packagePrice[]" class="form-control" required> \
                     </div> \
                 </div> \
@@ -151,11 +151,11 @@
             }
             else{
                 $(".alert").addClass("show")
-                setTimeout(()=>{
-                    $(".alert").removeClass("show")
-                },3000)
-            }
-        });
+                    setTimeout(()=>{
+                        $(".alert").removeClass("show")
+                    },3000)
+                }
+            });
         
         $('body').on('click','.removePackages',function(e){
             if(i>0){

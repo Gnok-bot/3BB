@@ -2,21 +2,35 @@
 <html lang="en">
 <head>
   <!-- Google Manager Area -->
-
+  <% if(tag){%>
+   <% tag.forEach(function(tag){ %>
+    <% if(tag.google_manager){ %>
+      <%- tag.google_manager %>
+    <% } %>   
   <!-- End Google Manager Area -->
-
   <!-- Google Analytic Area -->
-
+    <% if(tag.google_analytic){ %>
+      <%- tag.google_analytic %>
+    <% } %>   
   <!-- End Google Analytic Area -->
-
   <!-- Google Verification <meta> -->
-  
+    <% if(tag.google_verification){ %>
+      <%- tag.google_verification %>
+    <% } %>  
+    <% }) %> 
+   <% } %> 
   <%- include('../header') %>
     <title>3BB</title> 
 </head>
 <body class="landing-page sidebar-collapse">
   <!-- Google Manager Area -->
-
+  <% if(tag){%>
+    <% tag.forEach(function(tag){ %>
+     <% if(tag.google_manager){ %>
+       <%- tag.google_manager %>
+     <% } %>  
+    <% }) %>
+  <% } %>  
   <!-- End Google Manager Area -->
       <% if(locals.isLoggedIn) {%>
         <%- include('../navbar') %>
@@ -32,7 +46,7 @@
           </div>
           <% } %>
           <% if(locals.isLoggedIn) {%>
-            <% if(!blogs){ %> 
+            <% if(createBtn === 'on'){ %> 
             <div class="buttons">
               <a href="/admin/add" class="btn btn-primary">เขียนบทความ</a>
             </div>
