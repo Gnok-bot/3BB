@@ -1,54 +1,56 @@
 <!DOCTYPE html>
 <html lang="en">
-<head>
+  <head>
     <%- include('../header') %>
-    <title>Google Tag</title> 
-</head>
+    <title>Google Tag</title>
+  </head>
 
-<body class="landing-page sidebar-collapse" style="padding-top: 60px;">
+  <body class="landing-page sidebar-collapse" style="padding-top: 60px">
     <%- include('../navbar') %>
+    <form action="/admin/add-googletag" method="post">
     <div class="wrapper">
-        <div class="section rounded">
-            <div class="container">
-                <div class="row">
-                    <div class="col-md-3 mr-auto">
-                        <p>Google Tag</p>
-                    </div>
-                </div>
-                <div class="card">
-                    <div class="row card-body">
-                        <div class="col-6 py-2">
-                            <p>Google Manager Scirpt</p>
-                            <% results.forEach(function(res){ %>
-                            <p class="form-control"><%= res.google_manager %></p>
-                            <% }) %> 
-                        </div>
-                        <div class="col-6 py-2">
-                            <p>Google Analytic Scirpt</p>
-                            <% results.forEach(function(res){ %>
-                            <p class="form-control"><%= res.google_analytic %></p>
-                            <% }) %> 
-                        </div>
-                        <div class="col-6 py-2 form-group">
-                            <p>Google Verification Scirpt</p>
-                            <% results.forEach(function(res){ %>
-                            <p class="form-control"><%= res.google_verification %></p>
-                            <% }) %> 
-                        </div>
-                    </div>
-                    <div class="col-12 sumbit text-center">
-                        <a href="/admin/add-googletag"><button class="btn btn-primary" style="width:60%;">แก้ไข</button></a>
-                    </div>
-                </div>
+      <div class="section rounded">
+        <div class="container">
+          <div class="row">
+            <div class="col-md-3 mr-auto">
+              <p>Google Tag</p>
             </div>
+          </div>
+          <div class="card">
+            <div class="row card-body">
+              <div class="col-6 py-2">
+                <p>Google Manager Scirpt</p>
+                <% results.forEach(function(res){ %>
+                <textarea name="google_manager" cols="70" rows="3" > <%= res.google_manager %></textarea>
+                <% }) %>
+              </div>
+              <div class="col-6 py-2">
+                <p>Google Analytic Scirpt</p>
+                <% results.forEach(function(res){ %>
+                <textarea name="google_analytic" cols="70" rows="3" > <%= res.google_analytic %></textarea>
+                <% }) %>
+              </div>
+              <div class="col-6 py-2 form-group">
+                <p>Google Verification Scirpt</p>
+                <% results.forEach(function(res){ %>
+                <textarea name="google_verification" cols="70" rows="3" > <%= res.google_verification %></textarea>
+                <% }) %>
+              </div>
+            </div>
+            <div class="col-12 sumbit text-center">
+                <input type="submit" class="btn btn-primary py-2 mb-3" style="width:60%;" name="" id="" value="บันทึก">
+            </div>
+          </div>
         </div>
+      </div>
     </div>
-</body>
+    </form> 
+  </body>
 </html>
 <%- include('../script') %>
 <script type="text/javascript">
-    $(document).ready(()=>{
-          var $nav = $('.fixed-top');
-              $nav.removeClass('navbar-transparent')
-      });
-  </script>
+  $(document).ready(() => {
+    var $nav = $(".fixed-top");
+    $nav.removeClass("navbar-transparent");
+  });
+</script>

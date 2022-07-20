@@ -43,7 +43,6 @@ const storage = multer.diskStorage({
       cb(null, './public/images/' + req.session.id + '/packages')
     }
 
-
   },
   filename: function (req, file, cb) {
     if (file.fieldname === "img_logo") {
@@ -79,7 +78,6 @@ const storage = multer.diskStorage({
 const upload = multer({
   storage: storage
 })
-
 
 router.use(cookieSession({
   name: 'session',
@@ -120,11 +118,7 @@ router.get('/', ifNotLoggedIn, function (req, res, next) {
 res.redirect('/admin/blogs'))
 });
 
-router.get('/adduser', ifNotAdmin,(req, res) => {
-  res.render('register')
-})
-
-
+// ADD USER
 router.post('/adduser', ifNotLoggedIn, [
   body('username', 'ชื่อผู้ใช้งานไม่ถูกต้อง').custom((value) => {
     return Blogs.execute("SELECT username FROM users WHERE username = ?", [value])
@@ -144,7 +138,7 @@ router.post('/adduser', ifNotLoggedIn, [
       bcrypt.hash(password, 12).then((hash_pass) => {
         Blogs.execute("INSERT INTO users (username,password,role) VALUES (?,?,?)", [username, hash_pass, role])
           .then(result => {
-            res.render('succeed')
+            res.render('success')
             Blogs.execute("SELECT id FROM users WHERE username = ?",[username])
             .then((result)=>{
               fs.ensureDir('./public/images/' + result[0][0].id + '/banners', err => { if (err) console.log(err)})
@@ -178,8 +172,12 @@ router.post('/adduser', ifNotLoggedIn, [
   }
 )
 
-router.get('/succeed', (req,res)=>{
-  res.render('succeed')
+
+
+//logout
+router.get('/logout', (req, res) => {
+  req.session = null
+  res.redirect('/')
 })
 
 //login page
@@ -324,12 +322,6 @@ router.post('/update-password', [
   }
 })
 
-//logout
-router.get('/logout', (req, res) => {
-  req.session = null
-  res.redirect('/')
-})
-
 // System Log
 router.get('/log', ifNotLoggedIn, ifNotAdmin, (req, res, next) => {
   const id = req.session.id
@@ -360,40 +352,10 @@ router.get('/log', ifNotLoggedIn, ifNotAdmin, (req, res, next) => {
   }).catch((err)=>{if (err) throw err})
 })
 
-// System Log
-router.get('/gtag-lists', ifNotLoggedIn, ifNotAdmin, (req, res, next) => {
-  const id = req.session.id
-  const resultsPerPage = 10
-  Blogs.execute('SELECT g.*, u.firstName , u.lastName  FROM google_tag g, users u WHERE g.id = u.id').then((results)=>{
-    results = results[0]
-    const numOfResults = results.length
-    const numOfPages = Math.ceil(numOfResults / resultsPerPage)
-    let page = req.query.page ? Number(req.query.page) : 1
-    if(page > numOfPages){
-      res.redirect('/?page='+encodeURIComponent(numOfPages));
-    }else if(page < 1){
-      res.redirect('/?page='+encodeURIComponent('1'));
-    }
-    // SQL LIMIT starting Number
-    const startingLimit = (page - 1) * resultsPerPage
-    Blogs.execute(`SELECT g.*, u.firstName , u.lastName FROM google_tag g, users u WHERE g.id = u.id LIMIT ${startingLimit},${resultsPerPage} ;`).then((results)=>{
-      results = results[0]
-      let iterator = (page - 4) < 1 ? 1 : page - 4
-      let endingLink = (iterator + 9) <= numOfPages ? (iterator + 9) : page + (numOfPages - page)
-      if(endingLink < (page)){
-        iterator -= (page) - numOfPages;
-      }
-      Blogs.execute('SELECT role FROM users WHERE id = ?',[id]).then((result)=>{
-        res.render("blogs/taglists",{role: result[0], results: results, page, iterator, endingLink, numOfPages});
-      }).catch((err)=>{if (err) throw err})
-    }).catch((err)=>{if (err) throw err})
-  }).catch((err)=>{if (err) throw err})
-})
-
-// System Log
+//sales weblists
 router.get('/weblists', ifNotLoggedIn, ifNotAdmin, (req, res, next) => {
   const id = req.session.id
-  Blogs.execute('SELECT * FROM usersinfo').then((results)=>{
+  Blogs.execute('SELECT * FROM usersinfo ui, users u WHERE ui.id = u.id AND u.role = "Sale"').then((results)=>{
     results = results[0]
     Blogs.execute('SELECT role FROM users WHERE id = ?',[id]).then((result)=>{
       res.render("blogs/weblists",{role: result[0], results: results});
@@ -412,7 +374,7 @@ router.get('/user-config', ifNotLoggedIn, ifNotAdmin, (req, res, next) => {
   }).catch((err)=>{if (err) throw err})
 })
 
-//Profile lookup
+//Profile lookup for admin
 router.get('/profile-lookup/:id', ifNotLoggedIn, ifNotAdmin, (req, res, next) => {
   var id = req.params.id
   Blogs.execute('SELECT * FROM usersinfo WHERE id=?', [id])
@@ -444,7 +406,7 @@ router.get('/blogs', ifNotLoggedIn, function (req, res, next) {
     .then((result) => {
       blogResult = result[0]
       if(blogResult == ''){
-        bg = 'bg5.jpg'
+        bg = 'bg4.jpg'
         var createBtn = 'on'
       } else{
         bg = result[0][0].img_header
@@ -466,6 +428,23 @@ router.get('/blogs', ifNotLoggedIn, function (req, res, next) {
     })
 });
 
+//google tag lists page (ADMIN)
+router.get('/gtag-lists', ifNotLoggedIn, ifNotAdmin, (req, res, next) => {
+  const id = req.session.id
+  Blogs.execute('SELECT u.role, ui.firstName, ui.lastName , ui.area, g.* FROM users u \
+  LEFT JOIN usersinfo ui \
+  ON u.id = ui.id \
+  LEFT JOIN google_tag g \
+  ON u.id = g.id \
+  WHERE u.role = "Sale" AND ui.firstName IS NOT NULL').then((results)=>{
+    results = results[0]
+    Blogs.execute('SELECT role FROM users WHERE id = ?',[id]).then((result)=>{
+      res.render("blogs/taglists",{role: result[0], results: results,});
+    }).catch((err)=>{if (err) throw err})
+  }).catch((err)=>{if (err) throw err})
+})
+
+//google tag page (Sales)
 router.get('/googletag', ifNotLoggedIn, function (req, res, next) {
   const id = req.session.id  
   Blogs.execute('SELECT * FROM google_tag WHERE id = ?',[id]).then((results)=>{
@@ -473,13 +452,6 @@ router.get('/googletag', ifNotLoggedIn, function (req, res, next) {
     Blogs.execute('SELECT role FROM users WHERE id = ?',[id]).then((result)=>{
       res.render("blogs/googletag",{role: result[0], results: results});
     }).catch((err)=>{if (err) throw err})
-  }).catch((err)=>{if (err) throw err})
-});
-
-router.get('/add-googletag', ifNotLoggedIn, function (req, res, next) {
-  const id = req.session.id
-  Blogs.execute('SELECT role FROM users WHERE id = ?',[id]).then((result)=>{
-    res.render("blogs/addGoogletag",{role:result[0]});
   }).catch((err)=>{if (err) throw err})
 });
 
@@ -519,7 +491,7 @@ router.get('/profile/add/', ifNotLoggedIn, function (req, res, next) {
   }).catch((err)=>{if (err) throw err})
 });
 
-// ADD Profile INFO 
+// Add Profile information 
 router.post('/profileadd', upload.single('line_qrcode'), (req, res, next) => {
   const id = req.session.id
   const line_qrcode = (req.file != null) ? req.file.filename : ''
@@ -537,7 +509,7 @@ router.post('/profileadd', upload.single('line_qrcode'), (req, res, next) => {
     })
 })
 
-// Render EditProfile Page
+// Edit Profile Page
 router.get('/profile/edit?:id', ifNotLoggedIn, function (req, res, next) {
   const id = req.session.id
   Blogs.execute('SELECT * FROM usersinfo WHERE id=? ', [id])
@@ -574,6 +546,7 @@ router.post('/profile/update?:id', upload.single('line_qrcode'), (req, res, next
       })
 })
 
+//Delete account (Admin)
 router.get('/delete-account/:id', ifNotLoggedIn, ifNotAdmin, (req, res) =>{
   const id = req.params.id
   Blogs.execute("DELETE FROM users WHERE id= ?",[id]).then(
@@ -592,7 +565,7 @@ router.get('/delete-account/:id', ifNotLoggedIn, ifNotAdmin, (req, res) =>{
   )
 })
 
-
+//Delete blogs
 router.get('/delete/:id', ifNotLoggedIn, function (req, res, next) {
   // DELETE DATA
   const id = req.session.id
@@ -628,19 +601,16 @@ router.get('/edit/:id', ifNotLoggedIn, function (req, res, next) {
     })
 });
 
-//ADD Data
+//ADD Blog's data
 const imgUpload = upload.fields([{ name: 'img_logo', maxCount: 1 }, { name: 'promotionImg', maxCount: 1 },
 { name: 'packageImg', maxCount: 8 }, { name: 'img', maxCount: 8 }])
 router.post('/add', imgUpload, function (req, res, next) {
-  id = req.session.id
-  if(req.body.title != ''){
-    title = req.body.title
-  }else title = ''
-    subtitle = req.body.subtitle,
-    img_logo = req.files['img_logo'][0].filename
-    if(req.body.cardinfo != null){
-      cardinfo = req.body.cardinfo
-    } else cardinfo = ''
+  const id = req.session.id
+  const text_header = (req.body.text_header != '') ? req.body.text_header : ''
+  const title = req.body.title != '' ? req.body.title : ''
+  const subtitle = req.body.subtitle
+  const img_logo = req.files['img_logo'][0].filename
+  const cardinfo = req.body.cardinfo != null ? req.body.cardinfo : ''
   //Banner Img
   req.files['img'] != null ? (
     img_banner1 = req.files['img'][0].filename,
@@ -649,15 +619,15 @@ router.post('/add', imgUpload, function (req, res, next) {
     : (img_banner1 = '', img_banner2 = '', img_banner3 = '')
 
   //Promotion props
-  promoDesc = req.body.promoDesc,
-    promoImg = req.files['promotionImg'][0].filename
+  const promoDesc = req.body.promoDesc
+  const promoImg = req.files['promotionImg'][0].filename
 
   if(req.body.option == 'option1'){
-    img_header = 'bg3.jpg'
+    img_header = 'bg1.jpg'
   }else if(req.body.option == 'option2'){
-    img_header = 'bg4.jpg'
+    img_header = 'bg2.jpg'
   }else if(req.body.option == 'option3'){
-    img_header = 'bg6.jpg'
+    img_header = 'bg3 .jpg'
   }
   // Package props
   const index = req.body.packageName.length;
@@ -678,8 +648,8 @@ router.post('/add', imgUpload, function (req, res, next) {
       })
   }
   // INSERT DATA INTO TABLE BLOGS
-  Blogs.execute("INSERT INTO blogs (id, title, subtitle, img_header, img_logo, img_banner1, img_banner2, img_banner3, cardinfo) values \
-    (?,?,?,?,?,?,?,?,?)", [id, title, subtitle, img_header, img_logo, img_banner1, img_banner2, img_banner3, cardinfo])
+  Blogs.execute("INSERT INTO blogs (id, title, subtitle, text_header, img_header, img_logo, img_banner1, img_banner2, img_banner3, cardinfo) values \
+    (?,?,?,?,?,?,?,?,?,?)", [id, title, subtitle,text_header, img_header, img_logo, img_banner1, img_banner2, img_banner3, cardinfo])
     .then().catch((err) => {
       if (err) throw err;
     })
@@ -693,18 +663,17 @@ router.post('/add', imgUpload, function (req, res, next) {
     })
 });
 
-//UPDATE DATA
+//UPDATE Blog's Data
 const imgUpdate = upload.fields([{ name: 'img_logo', maxCount: 1 }, { name: 'promotionImg', maxCount: 1 },
 { name: 'packageImg1', maxCount: 1 }, { name: 'packageImg2', maxCount: 1 }, { name: 'packageImg3', maxCount: 1 },
 { name: 'packageImg4', maxCount: 1 }, { name: 'packageImg5', maxCount: 1 }, { name: 'packageImg6', maxCount: 1 },
 { name: 'packageImg7', maxCount: 1 }, { name: 'packageImg8', maxCount: 1 }, { name: 'img', maxCount: 8 }])
 
 router.post('/update', imgUpdate, function (req, res, next) {
-  id = req.session.id
-  if(req.body.title != ''){
-    title = req.body.title
-  }else title = ''
-    subtitle = req.body.subtitle
+  const id = req.session.id
+  const text_header = req.body.text_header != '' ? req.body.text_header : ''
+  const title = req.body.title != '' ? req.body.title : ''
+  const subtitle = req.body.subtitle
   if (req.files['img_logo'] != null) {
     img_logo = req.files['img_logo'][0].filename
     const path = './public/images/' + req.session.id + '/headers/' + req.body.img_logoPrev
@@ -717,11 +686,11 @@ router.post('/update', imgUpdate, function (req, res, next) {
   //Header Img
   if(req.body.option){
     if(req.body.option == 'option1'){
-      img_header = 'bg3.jpg'
+      img_header = 'bg1.jpg'
     }else if(req.body.option == 'option2'){
-      img_header = 'bg4.jpg'
+      img_header = 'bg2.jpg'
     }else if(req.body.option == 'option3'){
-      img_header = 'bg6.jpg'
+      img_header = 'bg3.jpg'
     }
   }else{
     img_header = ''
@@ -755,13 +724,10 @@ router.post('/update', imgUpdate, function (req, res, next) {
     }
     (img_banner1 = '', img_banner2 = '', img_banner3 = '')
   }
+  const cardinfo = req.body.cardinfo != null ? req.body.cardinfo : ''
 
-  if(req.body.cardinfo != null){
-    cardinfo = req.body.cardinfo
-  } else cardinfo = ''
-
-  Blogs.execute("UPDATE blogs SET title = ?, subtitle = ?,img_header = ?, img_logo = ?, img_banner1 = ?, img_banner2 = ?, img_banner3 = ?, \
-    cardinfo = ? WHERE id = ?", [title, subtitle, img_header, img_logo, img_banner1, img_banner2, img_banner3, cardinfo, id])
+  Blogs.execute("UPDATE blogs SET title = ?, subtitle = ?,text_header = ?, img_header = ?, img_logo = ?, img_banner1 = ?, img_banner2 = ?, img_banner3 = ?, \
+    cardinfo = ? WHERE id = ?", [title, subtitle, text_header, img_header, img_logo, img_banner1, img_banner2, img_banner3, cardinfo, id])
     .then().catch((err) => {
       if (err) throw err;
     })
@@ -818,8 +784,8 @@ router.post('/update', imgUpdate, function (req, res, next) {
   res.redirect('/admin/blogs');
 });
 
+// DELETE Package data
 router.get('/delete-pk/:packageNo', ifNotLoggedIn, function (req, res, next) {
-  // DELETE DATA
   const id = req.session.id
   packageNo = req.params.packageNo;
   Blogs.execute('SELECT packageImg FROM packages WHERE packageNo = ? AND id= ?', [packageNo, id])
@@ -834,12 +800,17 @@ router.get('/delete-pk/:packageNo', ifNotLoggedIn, function (req, res, next) {
     .then(res.redirect("/admin/edit/" + id))
 });
 
+
 router.post('/edit-tag/:id', ifNotLoggedIn, function (req, res, next) {
   const {google_analytic,google_manager,google_verification} = req.body
   const id = req.params.id
-  Blogs.execute('UPDATE google_tag SET google_analytic = ?, google_manager = ?, google_verification =? WHERE id = ?',[google_analytic,google_manager,google_verification,id])
+  Blogs.execute('UPDATE google_tag SET google_analytic = ?, google_manager = ?, google_verification = ? WHERE id = ?',[google_analytic,google_manager,google_verification,id])
   .then(res.redirect('/admin/gtag-lists')).catch((err) => {if (err) throw err})
 });
+
+router.get('/success', (req,res)=>{
+  res.render('success')
+})
 
 router.get('/footer', ifNotLoggedIn, function (req, res, next) {
   const id = req.session.id

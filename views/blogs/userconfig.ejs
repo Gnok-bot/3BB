@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
     <%- include('../header') %>
-    <title>Log Page</title>
+    <title>การจัดการ user</title>
 </head>
 <body class="landing-page sidebar-collapse" style="padding-top: 80px; background-color:rgb(237, 235, 235);">
     <%- include('../navbar') %>
@@ -84,11 +84,11 @@
                     <td><%= res.role %></td>
                     <td class="td-actions text-right p-0 pr-1">
                         <a href="/admin/profile-lookup/<%= res.id%>"><button type="button" rel="tooltip" class="btn btn-info btn-sm">
-                            <i class="now-ui-icons users_single-02"></i>
+                            <i class="fa-solid fa-user"></i>
                         </button></a>
                         <a href="/admin/profile-edit/<%= res.id%>">
                         <button type="button" rel="tooltip" class="btn btn-success btn-sm">
-                            <i class="now-ui-icons ui-2_settings-90"></i>
+                            <i class="fa-solid fa-pen-to-square"></i>
                         </button></a>
                         <a href="/admin/delete-account/<%= res.id%>">
                         <button type="button" rel="tooltip" class="btn btn-danger btn-sm">
