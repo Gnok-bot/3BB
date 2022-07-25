@@ -7,7 +7,7 @@
 
   <body class="landing-page sidebar-collapse" style="padding-top: 60px">
     <%- include('../navbar') %>
-    <form action="/admin/add-googletag" method="post">
+    <form action="/3bb/admin/add-googletag" method="post">
     <div class="wrapper">
       <div class="section rounded">
         <div class="container">
@@ -15,11 +15,16 @@
             <div class="col-md-3 mr-auto">
               <p>Google Tag</p>
             </div>
+            <% if(createBtn == 'off'){ %> 
+            <div class="col-md-8 text-right">
+              <a href="/3bb/admin/addGoogleTag"  class="btn btn-primary"> เพิ่ม Script Google Tag</a>
+            </div>
+            <% } %> 
           </div>
           <div class="card">
             <div class="row card-body">
               <div class="col-6 py-2">
-                <p>Google Manager Scirpt</p>
+                <p>Google Manager Scirpt</p> 
                 <% results.forEach(function(res){ %>
                 <textarea name="google_manager" cols="70" rows="3" > <%= res.google_manager %></textarea>
                 <% }) %>

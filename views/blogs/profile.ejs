@@ -18,7 +18,7 @@
               <% if(blogs == ""){ %>
               <div class="col">
                 <div class="sumbit text-right">
-                  <a href="/admin/profile/add/" class="btn btn-primary py-2 mb-3">เพิ่มข้อมูล</a>
+                  <a href="/3bb/admin/profile/add/" class="btn btn-primary py-2 mb-3">เพิ่มข้อมูล</a>
                 </div>
               </div>
               <% } %>
@@ -86,7 +86,7 @@
                       <img class="d-block img-raised" src="/images/<%= blog.id %>/qrcode/<%= blog.line_qrcode %>" alt="Line QRCODE" height="150px">
                     </div>
                     <div style="margin: 140px 20px 0 0;">
-                      <a href="/admin/profile/edit?:<%= blog.id %>"><button type="submit" class="btn btn-primary">แก้ไข</button></a>
+                      <a href="/3bb/admin/profile/edit?:<%= blog.id %>"><button type="submit" class="btn btn-primary">แก้ไข</button></a>
                     </div>
                   </div>
                   <% }) %>

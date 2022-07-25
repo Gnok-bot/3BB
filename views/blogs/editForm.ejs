@@ -15,7 +15,7 @@
             <h1 class="title"><%= data %></h1>
           </div>
           <div class="buttons">
-            <a href="/admin/blogs/" class="btn btn-primary">ย้อนกลับ</a>
+            <a href="/3bb/admin/blogs/" class="btn btn-primary">ย้อนกลับ</a>
           </div>
         </div>
       </div>
@@ -29,7 +29,7 @@
     <div class="section section-about">
         <div class="container">
             <% blog.forEach(function(db){ %>
-            <form action="/admin/update?:<%= db.id %> " method="POST" enctype="multipart/form-data">
+            <form action="/3bb/admin/update?:<%= db.id %> " method="POST" enctype="multipart/form-data">
                     <div class="wrapper">
                         <p>ข้อความ Head Banner</p>
                         <input type="text" name="text_header" class="form-control" value="<%= db.text_header %>">
@@ -127,7 +127,7 @@
                                 <div class="modal-footer">
                                     <button type="button" class="btn btn-secondary" data-dismiss="modal">ยกเลิก</button>
                                     <input type="hidden" value="<%= pk.packageNo %>">
-                                    <a href="/admin/delete-pk/<%= pk.packageNo %>"><button type="button" class="btn btn-primary">ยืนยัน</button></a>
+                                    <a href="/3bb/admin/delete-pk/<%= pk.packageNo %>"><button type="button" class="btn btn-primary">ยืนยัน</button></a>
                                 </div>  
                             </div>
                         </div>
@@ -180,7 +180,7 @@
                 <% }) %>
                 <div id="dynamic_field" class="dynamic_field"></div>
                 <input type="hidden" value="<%= db.id %>" name="id">
-                <input type="hidden" value="<%= db.promoDesc %>" name="promoDescPrev">
+                <input type="hidden" value="<%= db.promoImg %>" name="promoImgPrev">
                 <input type="hidden" value="<%= db.img_header %>" name="img_headerPrev">
                 <% }) %>
                 <div class="d-flex justify-content-center submit" id="submit">
@@ -227,7 +227,7 @@
                             <div class="form-group py-2 col-md-4"> \
                             <input type="checkbox" name="price" id="price_checkbox" class="form-check-input check-slideBtn ml-0 mt-2 price" style="margin-top:8px"> \
                             <p class="ml-4">แสดงราคาแพ็กเกจ</p> \
-                        <input type="text" name="package['+(i-1)+'][price]" class="form-control" required> \
+                        <input type="text" name="package['+(i-1)+'][price]" class="form-control"> \
                     </div> \
                 </div> \
                     <div class="form-group py-2 mb-2"> \

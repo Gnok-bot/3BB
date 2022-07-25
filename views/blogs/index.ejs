@@ -48,7 +48,7 @@
           <% if(locals.isLoggedIn) {%>
             <% if(createBtn === 'on'){ %> 
             <div class="buttons">
-              <a href="/admin/add" class="btn btn-primary">เขียนบทความ</a>
+              <a href="/3bb/admin/add" class="btn btn-primary">เขียนบทความ</a>
             </div>
           <% } %>
           <% } %>
@@ -64,8 +64,8 @@
             <div class="col-md-10 ml-auto mr-auto text-center mb-0" style="padding-top: 50px;">
               <% if(locals.isLoggedIn) {%>
                 <div class="text-right">
-                  <a href="/admin/edit/<%= blog.id %>" class="btn btn-primary">แก้ไข</a>
-                  <a href="/admin/delete/<%= blog.id %>" class="btn btn-danger">ลบ</a>
+                  <a href="/3bb/admin/edit/<%= blog.id %>" class="btn btn-primary">แก้ไข</a>
+                  <a href="/3bb/admin/delete/<%= blog.id %>" class="btn btn-danger">ลบ</a>
                 </div>   
                 <% }%>
               <img src="/images/<%= blog.id %>/headers/<%= blog.img_logo %>" height="100px" class="mb-3">

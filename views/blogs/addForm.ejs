@@ -8,14 +8,14 @@
     <%- include('../navbar') %>
     <div class="wrapper">
       <div class="page-header page-header-small">
-        <div class="page-header-image" data-parallax="true" style="background-image: url('../assets/img/bg6.jpg');">
+        <div class="page-header-image" data-parallax="true" style="background-image: url('/assets/img/bg6.jpg');">
         </div>
         <div class="content-center">
           <div class="container">
             <h1 class="title"><%= data %></h1>
           </div>
           <div class="buttons">
-            <a href="/admin/blogs/" class="btn btn-primary">ย้อนกลับ</a>
+            <a href="/3bb/admin/blogs/" class="btn btn-primary">ย้อนกลับ</a>
           </div>
         </div>
       </div>
@@ -27,7 +27,7 @@
       </div>
     <div class="section section-about">
         <div class="container">
-            <form action="/admin/add" method="POST" class="needs-validation" enctype="multipart/form-data">
+            <form action="/3bb/admin/add" method="POST" class="needs-validation" enctype="multipart/form-data">
                 <div class="wrapper">
                     <p>ข้อความ Head Banner</p>
                     <input type="text" name="text_header" class="form-control" value="">
@@ -138,7 +138,7 @@
                         <input type="text" name="packageName[]" class="form-control" required></div> \
                             <div class="form-group py-2 col-md-4"> \
                                 <p>ราคาแพ็กเกจ</p> \
-                                <input type="text" name="packageprice[]" class="form-control price" > \
+                                <input type="text" name="packagePrice[]" class="form-control price" > \
                     </div> \
                 </div> \
                     <div class="form-group py-2 mb-2"> \

@@ -11,7 +11,7 @@
         <div class="col-md-6">
             <div class="card" style="height: 500px;">
                 <div class="d-flex justify-content-center">
-                <form action="/admin/adduser" method="POST" novalidate>
+                <form action="/3bb/admin/adduser" method="POST" novalidate>
                     <div class="card-header text-center" style="padding-top: 70px;">
                         <div class="logo-container">
                           <p>ลงทะเทียนบัญชีพนักงาน</p>
@@ -83,14 +83,14 @@
                     <td><%= res.lastName %></td>
                     <td><%= res.role %></td>
                     <td class="td-actions text-right p-0 pr-1">
-                        <a href="/admin/profile-lookup/<%= res.id%>"><button type="button" rel="tooltip" class="btn btn-info btn-sm">
+                        <a href="/3bb/admin/profile-lookup/<%= res.id%>"><button type="button" rel="tooltip" class="btn btn-info btn-sm">
                             <i class="fa-solid fa-user"></i>
                         </button></a>
-                        <a href="/admin/profile-edit/<%= res.id%>">
+                        <a href="/3bb/admin/profile-edit/<%= res.id%>">
                         <button type="button" rel="tooltip" class="btn btn-success btn-sm">
                             <i class="fa-solid fa-pen-to-square"></i>
                         </button></a>
-                        <a href="/admin/delete-account/<%= res.id%>">
+                        <a href="/3bb/admin/delete-account/<%= res.id%>">
                         <button type="button" rel="tooltip" class="btn btn-danger btn-sm">
                             <i class="now-ui-icons ui-1_simple-remove"></i>
                         </button></a>

@@ -95,7 +95,7 @@ const ifNotLoggedIn = (req, res, next) => {
 
 const ifLoggedIn = (req, res, next) => {
   if (req.session.isLoggedIn) {
-    return res.render('/admin/blogs')
+    return res.render('/3bb/admin/blogs')
   }
   next();
 }
@@ -105,7 +105,7 @@ const ifNotAdmin = (req,res,next) => {
   Blogs.execute('SELECT role FROM users WHERE id = ?',[id]).then((result)=>{
     // console.log(result[0][0].role);
     if( result[0][0].role != 'Admin'){
-    return res.redirect('/admin')
+    return res.redirect('/3bb/admin')
   }
   next();
   })
@@ -115,7 +115,7 @@ const ifNotAdmin = (req,res,next) => {
 router.get('/', ifNotLoggedIn, function (req, res, next) {
   Blogs.execute("SELECT username FROM users WHERE id = ?", [req.session.id])
     .then(
-res.redirect('/admin/blogs'))
+res.redirect('/3bb/admin/blogs'))
 });
 
 // ADD USER
@@ -205,7 +205,7 @@ router.post('/login', ifLoggedIn, [
               const action = 'Log in'
               var ip = req.headers['x-forwarded-for'] || req.socket.remoteAddress
               Blogs.execute('INSERT INTO logs (ip_address,username,action) VALUES (?,?,?)',[ip,username,action]).then(
-                res.redirect('/admin/blogs')
+                res.redirect('/3bb/admin/blogs')
               ).catch((err)=>{if (err) throw err})
             } else {
               res.render('login', {
@@ -249,7 +249,7 @@ function sendEmail(email, token) {
       from: process.env.EMAIL_FROM,
       to: email,
       subject: 'คำร้องขอเปลี่ยนรหัสผ่าน',
-      html: '<p>คุณได้ส่งคำร้องขอเปลี่ยนรหัสผ่าน กรุณา <a href="http://localhost:3000/admin/set-password?token=' + token + '">คลิกที่นี่</a> เพื่อทำการเข้าหน้าเปลี่ยนรหัสผ่าน</p> \
+      html: '<p>คุณได้ส่งคำร้องขอเปลี่ยนรหัสผ่าน กรุณา <a href="http://localhost:3000/3bb/admin/set-password?token=' + token + '">คลิกที่นี่</a> เพื่อทำการเข้าหน้าเปลี่ยนรหัสผ่าน</p> \
       <p>ลิ้งค์จะหมดอายุภายใน 1 ชั่วโมง<p>'
   };
   mail.sendMail(mailOptions, function(error, info) {
@@ -449,10 +449,18 @@ router.get('/googletag', ifNotLoggedIn, function (req, res, next) {
   const id = req.session.id  
   Blogs.execute('SELECT * FROM google_tag WHERE id = ?',[id]).then((results)=>{
     results = results[0]
+    const createBtn = (results.length > 0) ? 'on' : 'off';
     Blogs.execute('SELECT role FROM users WHERE id = ?',[id]).then((result)=>{
-      res.render("blogs/googletag",{role: result[0], results: results});
+      res.render("blogs/googletag",{role: result[0], results: results , createBtn: createBtn});
     }).catch((err)=>{if (err) throw err})
   }).catch((err)=>{if (err) throw err})
+});
+
+router.get('/addGoogleTag', ifNotLoggedIn, function (req, res, next) {
+  const id = req.session.id  
+   Blogs.execute('SELECT role FROM users WHERE id = ?',[id]).then((result)=>{
+      res.render("blogs/addGoogletag",{role: result[0]});
+    }).catch((err)=>{if (err) throw err})
 });
 
 router.post('/add-googletag', ifNotLoggedIn, (req, res) =>{
@@ -463,7 +471,7 @@ router.post('/add-googletag', ifNotLoggedIn, (req, res) =>{
 
   Blogs.execute('DELETE FROM google_tag WHERE id = ?',[id]).then(
     Blogs.execute('INSERT INTO google_tag (id,google_manager,google_analytic,google_verification) VALUE (?,?,?,?)',[id,google_manager,google_analytic,google_verification])
-    .then(res.redirect("/admin/googletag"))
+    .then(res.redirect("/3bb/admin/googletag"))
     .catch((err)=>{ if (err) throw err})
   ).catch((err)=>{ if (err) throw err})
 })
@@ -500,7 +508,7 @@ router.post('/profileadd', upload.single('line_qrcode'), (req, res, next) => {
   VALUES (?,?,?,?,?,?,?,?,?,?,?,?)", [id, emp_id, firstName, lastName, email, telNum, line_url, line_qrcode, fb_url, area, province, address])
     .then(
       Blogs.execute("UPDATE users SET firstName = ?, lastName = ? WHERE id= ?",[firstName,lastName,id]).then(
-        res.redirect('/admin/profile'))
+        res.redirect('/3bb/admin/profile'))
       ).catch((err)=>{
         if (err) throw err;
       })
@@ -537,7 +545,7 @@ router.post('/profile/update?:id', upload.single('line_qrcode'), (req, res, next
       WHERE id = ?", [emp_id, firstName, lastName, email, telNum, line_url, line_qrcode, fb_url, area, province, address, id])
       .then(
         Blogs.execute("UPDATE users SET firstName = ?, lastName = ? WHERE id= ?",[firstName,lastName,id]).then(
-          res.redirect('/admin/profile')
+          res.redirect('/3bb/admin/profile')
         ).catch((err) => {
           if (err) throw err;
         })
@@ -558,7 +566,7 @@ router.get('/delete-account/:id', ifNotLoggedIn, ifNotAdmin, (req, res) =>{
       WHERE blogs.id=?", [id])
       .then(
         fs.remove('./public/images/' + id, err => {if (err) return console.error(err)}),
-        res.redirect('/admin/user-config'))
+        res.redirect('/3bb/admin/user-config'))
       .catch((err) => {
         if (err) throw err;
       })
@@ -578,7 +586,7 @@ router.get('/delete/:id', ifNotLoggedIn, function (req, res, next) {
       fs.emptyDir('./public/images/' + req.session.id + '/headers', err => {if (err) return console.error(err)}),
       fs.emptyDir('./public/images/' + req.session.id + '/packages', err => {if (err) return console.error(err)}),
       fs.emptyDir('./public/images/' + req.session.id + '/promos', err => {if (err) return console.error(err)}),
-      res.redirect('/admin/blogs'))
+      res.redirect('/3bb/admin/blogs'))
     .catch((err) => {
       if (err) throw err;
     })
@@ -622,21 +630,26 @@ router.post('/add', imgUpload, function (req, res, next) {
   const promoDesc = req.body.promoDesc
   const promoImg = req.files['promotionImg'][0].filename
 
-  if(req.body.option == 'option1'){
-    img_header = 'bg1.jpg'
-  }else if(req.body.option == 'option2'){
-    img_header = 'bg2.jpg'
-  }else if(req.body.option == 'option3'){
-    img_header = 'bg3 .jpg'
+  if(req.body.option){
+    if(req.body.option == 'option1'){
+      img_header = 'bg1.jpg'
+    }else if(req.body.option == 'option2'){
+      img_header = 'bg2.jpg'
+    }else if(req.body.option == 'option3'){
+      img_header = 'bg3.jpg'
+    }
+  }else{
+    img_header = ''
   }
   // Package props
   const index = req.body.packageName.length;
   for (i = 0; i < index; i++) {
     packageName = req.body.packageName[i]
+    
     if(req.body.price == 'on'){
       packagePrice = ''
     }else{
-      packagePrice = req.body.package[i - 1].price
+      packagePrice = req.body.packagePrice[i]
     }
     packageDesc = req.body.packageDesc[i]
     packageImg = req.files['packageImg'][i].filename
@@ -658,7 +671,7 @@ router.post('/add', imgUpload, function (req, res, next) {
     .then().catch((err) => {
       if (err) throw err;
     })
-    .then(res.redirect("/")).catch((err) => {
+    .then(res.redirect("/3bb/admin/blogs")).catch((err) => {
       if (err) throw err;
     })
 });
@@ -733,7 +746,8 @@ router.post('/update', imgUpdate, function (req, res, next) {
     })
 
   //Promotion props
-  req.body.promoDesc != '' ? promoDesc = req.body.promoDesc : promoDesc = req.body.promoDescPrev
+
+  req.body.promoDesc != '' ? promoDesc = req.body.promoDesc : promoDesc = ''
   if (req.files['promotionImg'] != null) {
     promoImg = req.files['promotionImg'][0].filename
     const path = './public/images/' + req.session.id + '/promos/' + req.body.promoImgPrev;
@@ -781,7 +795,7 @@ router.post('/update', imgUpdate, function (req, res, next) {
         if (err) throw err;
       })
   }
-  res.redirect('/admin/blogs');
+  res.redirect('/3bb/admin/blogs');
 });
 
 // DELETE Package data
@@ -797,7 +811,7 @@ router.get('/delete-pk/:packageNo', ifNotLoggedIn, function (req, res, next) {
       })
     }) 
   Blogs.execute('DELETE FROM packages WHERE packageNo = ? AND id= ?', [packageNo, id])
-    .then(res.redirect("/admin/edit/" + id))
+    .then(res.redirect("/3bb/admin/edit/" + id))
 });
 
 
@@ -805,7 +819,7 @@ router.post('/edit-tag/:id', ifNotLoggedIn, function (req, res, next) {
   const {google_analytic,google_manager,google_verification} = req.body
   const id = req.params.id
   Blogs.execute('UPDATE google_tag SET google_analytic = ?, google_manager = ?, google_verification = ? WHERE id = ?',[google_analytic,google_manager,google_verification,id])
-  .then(res.redirect('/admin/gtag-lists')).catch((err) => {if (err) throw err})
+  .then(res.redirect('/3bb/admin/gtag-lists')).catch((err) => {if (err) throw err})
 });
 
 router.get('/success', (req,res)=>{

@@ -34,7 +34,7 @@
             <% if(page> 1 ) { %>
             <a
               class="page-link"
-              href="/admin/log/?page=<%= page-1 %>"
+              href="/3bb/admin/log/?page=<%= page-1 %>"
               aria-label="Previous"
             >
               <span aria-hidden="true">&laquo;</span>
@@ -44,18 +44,18 @@
           </li>
           <% for(let i=iterator; i <=endingLink; i++) { %> <% if(i===page) { %>
           <li class="page-item">
-            <a class="page-link" href="/admin/log/?page=<%= i %>"> <%= i %> </a>
+            <a class="page-link" href="/3bb/admin/log/?page=<%= i %>"> <%= i %> </a>
           </li>
           <% continue; %> <% } %>
           <li class="page-item">
-            <a class="page-link" href="/admin/log/?page=<%= i %>"> <%= i %> </a>
+            <a class="page-link" href="/3bb/admin/log/?page=<%= i %>"> <%= i %> </a>
           </li>
           <% } %>
           <li class="page-item">
             <% if(page < numOfPages) { %>
             <a
               class="page-link"
-              href="/admin/log/?page=<%= page+1 %> "
+              href="/3bb/admin/log/?page=<%= page+1 %> "
               aria-label="Next"
             >
               <span aria-hidden="true">&raquo;</span>
