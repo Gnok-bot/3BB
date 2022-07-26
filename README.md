@@ -9,7 +9,7 @@ DB_PASSWORD =  <br/>
 DB_PORT =  <br/>
 DB_DATABASE =  <br/>
 <br/>
-EMAIL_FROM =    //server email <br/>
-MAIL_USERNAME =   //mail's server name <br/>
-MAIL_PASSWORD =  //mail's server password <br/>
-SECRET_KEY =  //Secret key for JWT Token
+EMAIL_FROM =            //server email <br/>
+MAIL_USERNAME =            //mail's server name <br/>
+MAIL_PASSWORD =           //mail's server password <br/>
+SECRET_KEY =              //Secret key for JWT Token
