@@ -2,7 +2,7 @@
  Add Folder /public/images <br/>
  example images: https://drive.google.com/drive/folders/18uRVSHq-emPJXNbFzBVO33ggVyhcWUqe?usp=sharing <br/>
  <br/>
- .evn needs <br/>
+ .env needs <br/>
 DB_HOST =  <br/>
 DB_USER =  <br/>
 DB_PASSWORD =  <br/>
