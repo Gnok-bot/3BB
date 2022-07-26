@@ -42,7 +42,6 @@ const storage = multer.diskStorage({
     } else if (file.fieldname === "packageImg8") {
       cb(null, './public/images/' + req.session.id + '/packages')
     }
-
   },
   filename: function (req, file, cb) {
     if (file.fieldname === "img_logo") {
@@ -172,8 +171,6 @@ router.post('/adduser', ifNotLoggedIn, [
   }
 )
 
-
-
 //logout
 router.get('/logout', (req, res) => {
   req.session = null
@@ -234,9 +231,10 @@ router.get('/forgot', (req,res)=>{
 })
 
 //send email
-function sendEmail(email, token) {
+function sendEmail(email, token, name) {
   var email = email;
   var token = token;
+  var name = name;
   var mail = nodemailer.createTransport({
     host: 'smtps.jasmine.com',
     port: '465',
@@ -249,7 +247,7 @@ function sendEmail(email, token) {
       from: process.env.EMAIL_FROM,
       to: email,
       subject: 'คำร้องขอเปลี่ยนรหัสผ่าน',
-      html: '<p>คุณได้ส่งคำร้องขอเปลี่ยนรหัสผ่าน กรุณา <a href="http://localhost:3000/3bb/admin/set-password?token=' + token + '">คลิกที่นี่</a> เพื่อทำการเข้าหน้าเปลี่ยนรหัสผ่าน</p> \
+      html: '<p>สวัสดีคุณ '+name+',<br>ได้ส่งคำร้องขอเปลี่ยนรหัสผ่าน กรุณา <a href="http://localhost:3000/3bb/admin/set-password?token=' + token + '">คลิกที่นี่</a> เพื่อทำการเข้าหน้าเปลี่ยนรหัสผ่าน</p> \
       <p>ลิ้งค์จะหมดอายุภายใน 1 ชั่วโมง<p>'
   };
   mail.sendMail(mailOptions, function(error, info) {
@@ -269,7 +267,8 @@ router.post('/reset-password', (req,res)=>{
     if(typeof result[0][0] != 'undefined'){
       if(result[0][0].email.length > 0){
         var token = jwt.sign({email: email}, process.env.SECRET_KEY,{expiresIn: '1h'})
-        var sent = sendEmail(email, token);
+        var name = result[0][0].firstName
+        var sent = sendEmail(email, token, name);
         if(sent != '0'){
           var success_msg = 'ส่งคำร้องขอเปลี่ยนรหัสผ่านเรียบร้อย'
           res.render('forgot',{success_msg:success_msg})
