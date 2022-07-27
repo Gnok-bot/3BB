@@ -118,7 +118,7 @@ res.redirect('/3bb/admin/blogs'))
 });
 
 // ADD USER
-router.post('/adduser', ifNotLoggedIn, [
+router.post('/adduser', [
   body('username', 'ชื่อผู้ใช้งานไม่ถูกต้อง').custom((value) => {
     return Blogs.execute("SELECT username FROM users WHERE username = ?", [value])
       .then(([rows]) => {
@@ -229,6 +229,11 @@ router.post('/login', ifLoggedIn, [
 router.get('/forgot', (req,res)=>{
   res.render('forgot')
 })
+
+// add user first time
+// router.get('/register', (req,res)=>{
+//   res.render("register")
+// })
 
 //send email
 function sendEmail(email, token, name) {
