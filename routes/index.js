@@ -3,9 +3,9 @@ var router = express.Router();
 const Blogs = require('../models/blogs');
 
 /* GET home page. */
-router.get('/', function(req, res, next) {
-  res.render('index');
-});
+// router.get('/', function(req, res, next) {
+//   res.render('index');
+// });
 
 router.get('/:id', function(req, res, next) {
   const id = req.params.id

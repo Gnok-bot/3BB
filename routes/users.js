@@ -230,7 +230,7 @@ router.get('/forgot', (req,res)=>{
   res.render('forgot')
 })
 
-// add user first time
+// add user for first time
 // router.get('/register', (req,res)=>{
 //   res.render("register")
 // })
